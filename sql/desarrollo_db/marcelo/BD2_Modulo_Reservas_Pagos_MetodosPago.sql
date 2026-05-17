@@ -16,12 +16,6 @@
 ------------------------------------------------------------
 -- Tabla: Reservas
 ------------------------------------------------------------
-CREATE DATABASE TICKETERA_CINES
-Collate Latin1_General_CI_AI
-GO
-
-USE TICKETERA_CINES;
-GO
 
 CREATE TABLE Reservas
 (
