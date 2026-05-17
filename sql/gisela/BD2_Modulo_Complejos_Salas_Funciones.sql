@@ -6,8 +6,6 @@
     Crear las tablas correspondientes a la infraestructura física y los horarios de las funciones.
 */
 
-USE TICKETERA_CINES; 
-GO
 
 ------------------------------------------------------------
 -- Tabla: Complejos
@@ -55,3 +53,9 @@ CREATE TABLE Funciones (
     CONSTRAINT CK_Funciones_FechaHora CHECK (fecha_hora > GETDATE())
 );
 GO
+
+
+
+
+
+
