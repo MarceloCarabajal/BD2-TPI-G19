@@ -94,7 +94,7 @@ CREATE TABLE Funciones (
 );
 GO
 
--- ========== Henry (parte 1) ==========
+-- henry (parte 1)
 
 CREATE TABLE USUARIOS (
     id_usuario INT NOT NULL IDENTITY(1, 1),
