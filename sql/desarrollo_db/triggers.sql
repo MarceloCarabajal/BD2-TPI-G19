@@ -8,3 +8,4 @@ GO
 -- Henry
 
 -- Marce
+-- Reservas/pagos triggers mas adelante
