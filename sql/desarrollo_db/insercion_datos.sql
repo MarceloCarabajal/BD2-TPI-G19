@@ -6,8 +6,6 @@ GO
 -- Gaston
 -- Gisela
 
--- Gisela
-
 -- INSERTS: COMPLEJOS 
 
 INSERT INTO COMPLEJOS (nombre, direccion, telefono) VALUES
