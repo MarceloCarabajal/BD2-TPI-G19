@@ -21,7 +21,7 @@ GO
 SELECT * FROM COMPLEJOS;
 
 
--- INSERTS: SALAS (Mínimo 5 - Distribuidas en los complejos anteriores)
+-- INSERTS: SALAS 
 
 INSERT INTO SALAS (id_complejo, nombre_sala, capacidad_total, tipo_sala) VALUES
     (1, 'Sala 1 - IMAX', 300, 'IMAX'),
