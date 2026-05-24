@@ -22,12 +22,12 @@ SELECT * FROM COMPLEJOS;
 -- INSERTS: SALAS 
 
 INSERT INTO SALAS (id_complejo, nombre_sala, capacidad_total, tipo_sala) VALUES
-    (1, 'Sala 1 - IMAX', 300, 'IMAX'),
-    (1, 'Sala 2 - 3D', 180, '3D'),
-    (2, 'Sala Monster 2D', 220, '2D'),
-    (3, 'Sala 3D Belgrano', 150, '3D'),
-    (4, 'Sala 4 - 2D', 120, '2D'),
-    (5, 'Sala Comfort 3D', 200, '3D');
+    (1, 'Sala 1', 300, 'IMAX'),
+    (1, 'Sala 2', 180, '3D'),
+    (2, 'Sala 1', 220, '2D'),
+    (3, 'Sala 1', 150, '3D'),
+    (4, 'Sala 1', 120, '2D'),
+    (5, 'Sala 1', 200, '3D');
 GO
 
 SELECT * FROM SALAS;
