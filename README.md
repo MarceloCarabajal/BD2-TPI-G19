@@ -1,1 +1,138 @@
-# BD2-TPI-G19
+# BD2-TPI-G19 — Sistema de reservas de cine
+
+Trabajo Práctico Integrador · **Base de Datos II** · UTN TUP · **Grupo 19**
+
+Base de datos relacional **`BD2_TPI_G19`** sobre **Microsoft SQL Server** para un sistema de gestión de complejos cinematográficos, cartelera, funciones, usuarios, reservas por butaca y pagos.
+
+---
+
+## Integrantes y módulos (DDL)
+
+Los bloques están comentados en [`sql/desarrollo_db/creacion_bd.sql`](sql/desarrollo_db/creacion_bd.sql).
+
+| Integrante | Tablas |
+|------------|--------|
+| **Carlos Gastón Carabajal** | `CLASIFICACIONES`, `GENEROS`, `PELICULAS` |
+| **Gisela Grisel Lanzillotta** | `COMPLEJOS`, `SALAS`, `FUNCIONES` |
+| **Henry José Vázquez Velásquez** | `USUARIOS`, `BUTACAS`, `DETALLES_RESERVAS` |
+| **Marcelo Carabajal** | `METODOS_PAGOS`, `RESERVAS`, `PAGOS` |
+
+---
+
+## Herramientas (acordadas en equipo)
+
+| Uso | Herramienta |
+|-----|----------------|
+| Modelado | SQL Server Management Studio (SSMS) - Draw.io |
+| Control de versiones | GitHub |
+| Seguimiento de tareas | Jira |
+| Motor SQL en local | Docker (SQL Server) - SQL Server Express |
+| Ejecución y depuración de scripts | SQL Server Management Studio (SSMS) |
+
+---
+
+## Entorno de desarrollo (Docker)
+
+Ejemplo equivalente al de la materia (`teoria/bd_relacionales`):
+
+```bash
+docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=BaseDatos#2" -e "MSSQL_PID=Express" \
+  -e "TZ=America/Buenos_Aires" -p 1433:1433 --name SQLServer2025 \
+  --hostname SQLServer2025 -d mcr.microsoft.com/mssql/server:2025-latest
+```
+
+- Servidor: `localhost`, puerto **1433**
+- Usuario: **`mssql`**
+- Contraseña: **`BaseDatos#2`** (solo desarrollo local)
+
+---
+
+## Estructura del repositorio
+
+```
+BD2-TPI-G19/
+├── appPeliculas/              # aplicación cliente (fuera del alcance DDL)
+├── README.md
+└── sql/
+    └── desarrollo_db/
+        ├── creacion_bd.sql              # DDL: CREATE DATABASE + tablas + restricciones
+        ├── insercion_datos.sql          # INSERT de datos de prueba (bloques por integrante)
+        ├── views.sql                    # Vistas
+        ├── procedimientos_almacenados.sql
+        ├── funciones.sql                # Funciones T-SQL (si aplica al TPI)
+        └── triggers.sql
+```
+
+Las secciones de **inserción**, **vistas** y **SP** pueden organizarse por comentarios de cabecera por integrante, para reducir conflictos al hacer merge desde ramas `feature/*`.
+
+---
+
+## Orden recomendado de ejecución (SSMS)
+
+1. **`creacion_bd.sql`** — crea la base `BD2_TPI_G19` y todas las tablas.
+2. **`insercion_datos.sql`** — cargar datos respetando el orden de claves foráneas (catalogo → complejos/salas → funciones/butacas → usuarios → métodos/reservas/pagos → detalle).
+3. **`views.sql`**
+4. **`procedimientos_almacenados.sql`**
+5. **`funciones.sql`** 
+6. **`triggers.sql`**
+
+Incluir al inicio de los scripts auxiliares (cuando aplique):
+
+```sql
+USE BD2_TPI_G19;
+GO
+SET DATEFORMAT ymd;
+GO
+```
+
+---
+
+## Reglas de negocio destacadas en el DDL
+
+| Regla | Dónde |
+|-------|--------|
+| Estado de sala | `tipo_sala` ∈ `('2D','3D','IMAX')`; `capacidad_total` > 0 |
+| Precio de función | `precio_base` > 0 |
+| Función futura | `FUNCIONES.fecha_hora` > momento actual (`GETDATE()` al insertar — pensar datos de prueba con fechas futuras) |
+| Reserva | `estado` ∈ Pendiente \| Pagada \| Cancelada |
+| Un pago por reserva | `UQ_PAGOS_RESERVA` en `PAGOS` |
+| Estado de pago | `estado_pago` ∈ Pendiente \| Aprobado \| Rechazado \| Devuelto |
+| No repetir butaca por función | `UQ_DETALLES_RESERVAS_FuncionButaca` sobre (`id_funcion`, `id_butaca`) |
+
+---
+
+## Convenciones y base de datos
+
+- **Nombre de la BD:** `BD2_TPI_G19`
+- **Collation:** `Latin1_General_CI_AI` (consistente con scripts de práctica del curso)
+- **Claves surrogate:** `IDENTITY(1,1)` en PK
+
+---
+
+## Flujo Git (referencia)
+
+- Rama principal típica: `main`.
+- Funcionalidad nueva: ramas `feature/BD2-XX-descripcion breve`.
+- Ejemplo relacionado al módulo de pagos/reservas:  
+  `feature/BD2-21-insercion-datos-modulo-reservas-pagos-medios-pagos`.
+
+Antes del merge coordinar IDs de FK en **`insercion_datos.sql`** entre Gastón, Gisela, Henry y Marcelo para evitar errores 547.
+
+---
+
+## Seguridad
+
+El campo **`USUARIOS.password`** existe para el modelo funcional del TPI en entorno **académico**. En un sistema real las contraseñas no se guardarían en texto plano ni en esta columna tal cual.
+
+---
+
+## Documentación complementaria del equipo
+
+- Minutas en el aula virtual del curso (alcance funcional, DER, reparto).
+- DER en Draw.io y luego en SQL Server Management Studio (SSMS).
+
+---
+
+## Licencia / uso académico
+
+Proyecto académico UTN · Uso dentro del marco del TPI BD2 correspondiente.

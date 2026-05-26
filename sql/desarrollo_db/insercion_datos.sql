@@ -4,9 +4,8 @@ SET DATEFORMAT ymd;
 GO
 
 -- Gaston
--- Gisela
 
--- INSERTS: COMPLEJOS 
+-- Gisela
 
 INSERT INTO COMPLEJOS (nombre, direccion, telefono) VALUES
     ('CineHoyts Abasto', 'Av. Corrientes 3247, CABA', '11-4861-2200'),
@@ -19,8 +18,6 @@ GO
 SELECT * FROM COMPLEJOS;
 
 
--- INSERTS: SALAS 
-
 INSERT INTO SALAS (id_complejo, nombre_sala, capacidad_total, tipo_sala) VALUES
     (1, 'Sala 1', 300, 'IMAX'),
     (1, 'Sala 2', 180, '3D'),
@@ -31,8 +28,6 @@ INSERT INTO SALAS (id_complejo, nombre_sala, capacidad_total, tipo_sala) VALUES
 GO
 
 SELECT * FROM SALAS;
-
--- INSERTS: FUNCIONES
 
 INSERT INTO FUNCIONES (id_pelicula, id_sala, fecha_hora, precio_base) VALUES
     (1, 1, '2026-06-15 18:00:00', 4500.00), -- Película 1 en Sala 1 (IMAX)
@@ -48,6 +43,7 @@ SELECT * FROM FUNCIONES;
 -- Henry
 
 -- Marce
+
 INSERT INTO Metodos_Pagos (nombre) VALUES
     ('Efectivo'),
     ('Tarjeta de débito'),
