@@ -40,30 +40,64 @@ GO
 
 SELECT * FROM FUNCIONES;
 
--- Henry
+-- Henry (Parte 1)
+
+INSERT INTO USUARIOS (nombre, apellido, email, password, fecha_registro) VALUES
+    ('Martina', 'Gómez', 'martina.gomez@gmail.com', 'Martina123', '2025-03-15'),
+    ('Lucas', 'Fernández', 'lucas.fernandez@hotmail.com', 'Lucas123', '2024-05-02'),
+    ('Valentina', 'Pereyra', 'valentina.pereyra@gmail.com', 'Valentina123', '2026-03-10'),
+    ('Santiago', 'Ramírez', 'santiago.ramirez@yahoo.com', 'Santiago123', GETDATE()),
+    ('Camila', 'Torres', 'camila.torres@outlook.com', 'Camila123', '2026-08-20'),
+    ('Mateo', 'Suárez', 'mateo.suarez@email.com', 'Mateo123', '2026-11-05')
+GO
+SELECT * FROM USUARIOS;
+
+INSERT INTO BUTACAS (id_sala, fila, numero) VALUES
+    (1, 'A', 1),
+    (2, 'B', 5),
+    (3, 'A', 3),
+    (4, 'C', 7),
+    (5, 'D', 12),
+    (1, 'E', 9)
+GO
+SELECT * FROM BUTACAS;
 
 -- Marce
 
-INSERT INTO Metodos_Pagos (nombre) VALUES
+INSERT INTO METODOS_PAGOS (nombre) VALUES
     ('Efectivo'),
     ('Tarjeta de débito'),
     ('Tarjeta de crédito'),
     ('Mercado Pago'),
     ('Transferencia bancaria');
 GO
-SELECT * FROM Metodos_Pagos;
+SELECT * FROM METODOS_PAGOS;
 
 -- Pendientes luego de definir los usuarios, funciones y demás datos relacionados para completar las reservas y pagos
--- INSERT INTO Reservas (id_usuario, id_funcion, fecha_reserva, total_pagado, estado) VALUES
+-- INSERT INTO RESERVAS (id_usuario, id_funcion, fecha_reserva, total_pagado, estado) VALUES
 --     (1, 1, '2026-05-10 12:00:00', 17000.00, 'Pagada'),
 --     (2, 1, '2026-05-11 15:30:00', 8500.00, 'Pagada'),
 --     (3, 3, '2026-05-12 18:00:00', NULL, 'Pendiente'),
 --     (4, 5, '2026-05-13 20:00:00', 10400.00, 'Pagada'),
 --     (5, 6, '2026-05-14 11:00:00', NULL, 'Cancelada');
 -- GO
+-- SELECT * FROM RESERVAS;
 
--- INSERT INTO Pagos (id_reserva, id_metodo_pago, fecha_pago, total_pagado, estado_pago) VALUES
+-- INSERT INTO PAGOS (id_reserva, id_metodo_pago, fecha_pago, total_pagado, estado_pago) VALUES
 --     (1, 3, '2026-05-10 12:05:00', 17000.00, 'Aprobado'),
 --     (2, 4, '2026-05-11 15:35:00', 8500.00, 'Aprobado'),
 --     (4, 2, '2026-05-13 20:10:00', 10400.00, 'Aprobado');
 -- GO
+-- SELECT * FROM PAGOS;
+
+-- Henry (Parte 2)
+
+-- INSERT INTO DETALLES_RESERVAS (id_reserva, id_butaca, id_funcion, precio_unitario) VALUES
+--     (1, 3, 2, 5200.00),
+--     (1, 4, 2, 5200.00),
+--     (2, 1, 5, 7500.00),
+--     (3, 6, 1, 4500.00),
+--     (4, 2, 4, 4800.00),
+--     (5, 5, 3, 6000.00)
+-- GO
+-- SELECT * FROM DETALLES_RESERVAS;
