@@ -3,7 +3,38 @@ GO
 SET DATEFORMAT ymd;
 GO
 
--- Gaston
+--Gaston
+
+-- INSERTS PARA LA TABLA: CLASIFICACIONES
+
+INSERT INTO CLASIFICACIONES (descripcion) VALUES
+('ATP - Apta para todo público'),
+('SAM 13 - Apta para mayores de 13 años'),
+('SAM 16 - Apta para mayores de 16 años'),
+('SAM 18 - Apta para mayores de 18 años');
+
+--  INSERTS PARA LA TABLA: GENEROS
+
+INSERT INTO GENEROS (descripcion) VALUES
+('Acción'),
+('Ciencia Ficción'),
+('Drama'),
+('Comedia'),
+('Terror'),
+('Animación');
+
+-- INSERTS PARA LA TABLA: PELICULAS
+
+INSERT INTO PELICULAS (id_clasificacion, id_genero, titulo, sinopsis, duracion_minutos) VALUES
+(1, 6, 'Toy Story', 'Un grupo de juguetes vivientes se meten en problemas cuando llega un nuevo juguete espacial.', 81),
+(3, 2, 'Matrix', 'Un programador de computación descubre que el mundo en el que vive es una simulación virtual.', 136),
+(2, 1, 'The Avengers', 'Los héroes más poderosos de la Tierra se unen para defender el planeta de una amenaza alienígena.', 143),
+(4, 5, 'El Conjuro', 'Investigadores paranormales acuden a ayudar a una familia que experimenta sucesos extraños en su granja.', 112),
+(1, 4, 'Shrek', 'Un ogro gruñón emprende un viaje junto a un burro parlanchín para rescatar a una princesa.', 90),
+(2, 3, 'Interestelar', 'Un grupo de científicos viaja a través de un agujero de gusano en el espacio para encontrar un nuevo hogar para la humanidad.', 169),
+(2, 2, 'Jurassic Park', 'Un multimillonario recrea dinosaurios mediante ingeniería genética para un parque de atracciones, pero algo sale terriblemente mal.', 127),
+(1, 3, 'Rocky', 'Un boxeador de un barrio humilde recibe la oportunidad de su vida para pelear por el título mundial de peso completo.', 119);
+GO
 
 -- Gisela
 
