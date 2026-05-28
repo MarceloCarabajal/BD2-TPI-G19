@@ -17,7 +17,8 @@ GO
 
 -- USE DBTutorias
 -- DROP DATABASE IF EXISTS BD2_TPI_G19;
--- gaston
+
+-- Gaston
 GO
 
 CREATE TABLE CLASIFICACIONES
@@ -52,7 +53,7 @@ CREATE TABLE PELICULAS
 );
 GO
 
--- gisela
+-- Gisela
 
 CREATE TABLE COMPLEJOS
 (
@@ -96,7 +97,7 @@ CREATE TABLE FUNCIONES
 );
 GO
 
--- henry (parte 1)
+-- Henry (parte 1)
 
 CREATE TABLE USUARIOS
 (
@@ -124,7 +125,7 @@ CREATE TABLE BUTACAS
 );
 GO
 
--- marcelo
+-- Marcelo
 
 CREATE TABLE METODOS_PAGOS
 (
@@ -168,7 +169,7 @@ CREATE TABLE PAGOS
 );
 GO
 
--- henry (parte 2)
+-- Henry (parte 2)
 
 CREATE TABLE DETALLES_RESERVAS
 (
