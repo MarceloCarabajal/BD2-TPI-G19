@@ -3,8 +3,7 @@ GO
 SET DATEFORMAT ymd;
 GO
 
--- Gaston
+-- Gaston   (BD2-28)  CREATE FUNCTION fn_ObtenerDuracionPelicula ...
 -- Gisela
 -- Henry
-
--- Marce
+-- Marcelo
