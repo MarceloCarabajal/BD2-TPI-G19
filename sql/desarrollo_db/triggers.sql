@@ -4,8 +4,6 @@ SET DATEFORMAT ymd;
 GO
 
 -- Gaston
--- Gisela
+-- Gisela   (BD2-33)  TR_DetallesReservas_EvitarButacaDuplicada
 -- Henry
-
--- Marce
--- Reservas/pagos triggers mas adelante
+-- Marcelo  (BD2-34)  TR_Pagos_ActualizarEstadoReserva

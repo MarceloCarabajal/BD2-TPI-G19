@@ -3,11 +3,9 @@ GO
 SET DATEFORMAT ymd;
 GO
 
--- Gaston
--- Gisela
--- Henry
-
--- Marce
--- sp_RegistrarPago
--- sp_CancelarReserva
--- sp_ReservasPorUsuario
+-- Gaston   (BD2-29)  sp_InsertarPelicula
+-- Gisela   (BD2-30)  sp_CrearFuncion
+-- Henry    (BD2-31)  sp_ReservasPorUsuario / sp_ButacasOcupadasPorFuncion
+-- Henry    (BD2-35)  sp_CrearReservaConDetalle  (BEGIN TRAN)
+-- Marcelo  (BD2-32)  sp_RegistrarPago, sp_CancelarReserva
+-- Marcelo  (BD2-36)  TRY/CATCH + TRAN en sp_RegistrarPago
