@@ -153,13 +153,14 @@ GO
 
 -- INSERTS PARA LA TABLA: DETALLES_RESERVAS
 
-INSERT INTO DETALLES_RESERVAS (id_reserva, id_butaca, id_funcion, precio_unitario) VALUES
-    (1, 1, 1, 4500.00), -- Reserva 1 (Función 1 - Sala 1) -> Usa Butaca 1 (Sala 1) 
-    (1, 2, 1, 4500.00), -- Reserva 1 (Función 1 - Sala 1) -> Usa Butaca 2 (Sala 1)
-    (2, 3, 1, 4500.00), -- Reserva 2 (Función 1 - Sala 1) -> Usa Butaca 3 (Sala 1)
-    (3, 5, 3, 2800.00), -- Reserva 3 (Función 3 - Sala 3) -> Usa Butaca 5 (Sala 3)
-    (4, 6, 5, 2500.00), -- Reserva 4 (Función 5 - Sala 5) -> Usa Butaca 6 (Sala 5)
-    (5, 7, 6, 3500.00); -- Reserva 5 (Función 6 - Sala 6) -> Usa Butaca 7 (Sala 6)
+INSERT INTO DETALLES_RESERVAS 
+    (id_reserva, id_butaca, precio_unitario) VALUES
+    (1, 1, 4500.00), -- Reserva 1 (Función 1 - Sala 1) -> Usa Butaca 1 (Sala 1) 
+    (1, 2, 4500.00), -- Reserva 1 (Función 1 - Sala 1) -> Usa Butaca 2 (Sala 1)
+    (2, 3, 4500.00), -- Reserva 2 (Función 1 - Sala 1) -> Usa Butaca 3 (Sala 1)
+    (3, 5, 2800.00), -- Reserva 3 (Función 3 - Sala 3) -> Usa Butaca 5 (Sala 3)
+    (4, 6, 2500.00), -- Reserva 4 (Función 5 - Sala 5) -> Usa Butaca 6 (Sala 5)
+    (5, 7, 3500.00); -- Reserva 5 (Función 6 - Sala 6) -> Usa Butaca 7 (Sala 6)
 GO
 -- SELECT * FROM DETALLES_RESERVAS;
 -- GO
