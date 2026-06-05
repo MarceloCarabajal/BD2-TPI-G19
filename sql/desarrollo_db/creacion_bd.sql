@@ -23,7 +23,7 @@ GO
 
 CREATE TABLE CLASIFICACIONES
 (
-    id_clasificacion INT NOT NULL IDENTITY(1, 1),
+    id_clasificacion BIGINT NOT NULL IDENTITY(1, 1),
     descripcion VARCHAR(50) NOT NULL,
     CONSTRAINT PK_CLASIFICACIONES PRIMARY KEY (id_clasificacion)
 );
@@ -31,7 +31,7 @@ GO
 
 CREATE TABLE GENEROS
 (
-    id_genero INT NOT NULL IDENTITY(1, 1),
+    id_genero BIGINT NOT NULL IDENTITY(1, 1),
     descripcion VARCHAR(50) NOT NULL,
     CONSTRAINT PK_GENEROS PRIMARY KEY (id_genero)
 );
@@ -39,12 +39,12 @@ GO
 
 CREATE TABLE PELICULAS
 (
-    id_pelicula INT NOT NULL IDENTITY(1, 1),
-    id_clasificacion INT NOT NULL,
-    id_genero INT NOT NULL,
+    id_pelicula BIGINT NOT NULL IDENTITY(1, 1),
+    id_clasificacion BIGINT NOT NULL,
+    id_genero BIGINT NOT NULL,
     titulo VARCHAR(150) NOT NULL,
     sinopsis VARCHAR(1000) NULL,
-    duracion_minutos INT NULL,
+    duracion_minutos SMALLINT NULL,
     CONSTRAINT PK_PELICULAS PRIMARY KEY (id_pelicula),
     CONSTRAINT FK_PELICULAS_CLASIFICACION
         FOREIGN KEY (id_clasificacion) REFERENCES CLASIFICACIONES (id_clasificacion),
@@ -57,7 +57,7 @@ GO
 
 CREATE TABLE COMPLEJOS
 (
-    id_complejo INT NOT NULL IDENTITY(1, 1),
+    id_complejo BIGINT NOT NULL IDENTITY(1, 1),
     nombre VARCHAR(100) NOT NULL,
     direccion VARCHAR(255) NOT NULL,
     telefono VARCHAR(50) NULL,
@@ -67,10 +67,10 @@ GO
 
 CREATE TABLE SALAS
 (
-    id_sala INT NOT NULL IDENTITY(1, 1),
-    id_complejo INT NOT NULL,
+    id_sala BIGINT NOT NULL IDENTITY(1, 1),
+    id_complejo BIGINT NOT NULL,
     nombre_sala VARCHAR(50) NOT NULL,
-    capacidad_total INT NOT NULL,
+    capacidad_total SMALLINT NOT NULL,
     tipo_sala VARCHAR(10) NOT NULL,
     CONSTRAINT PK_SALAS PRIMARY KEY (id_sala),
     CONSTRAINT FK_SALAS_COMPLEJOS
@@ -82,11 +82,11 @@ GO
 
 CREATE TABLE FUNCIONES
 (
-    id_funcion INT NOT NULL IDENTITY(1, 1),
-    id_pelicula INT NOT NULL,
-    id_sala INT NOT NULL,
+    id_funcion BIGINT NOT NULL IDENTITY(1, 1),
+    id_pelicula BIGINT NOT NULL,
+    id_sala BIGINT NOT NULL,
     fecha_hora DATETIME NOT NULL,
-    precio_base DECIMAL(10, 2) NOT NULL,
+    precio_base MONEY NOT NULL,
     CONSTRAINT PK_FUNCIONES PRIMARY KEY (id_funcion),
     CONSTRAINT FK_FUNCIONES_SALAS
         FOREIGN KEY (id_sala) REFERENCES SALAS (id_sala),
@@ -101,7 +101,7 @@ GO
 
 CREATE TABLE USUARIOS
 (
-    id_usuario INT NOT NULL IDENTITY(1, 1),
+    id_usuario BIGINT NOT NULL IDENTITY(1, 1),
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
@@ -114,8 +114,8 @@ GO
 
 CREATE TABLE BUTACAS
 (
-    id_butaca INT NOT NULL IDENTITY(1, 1),
-    id_sala INT NOT NULL,
+    id_butaca BIGINT NOT NULL IDENTITY(1, 1),
+    id_sala BIGINT NOT NULL,
     fila VARCHAR(1) NOT NULL,
     numero TINYINT NOT NULL,
     CONSTRAINT PK_BUTACAS PRIMARY KEY (id_butaca),
@@ -129,7 +129,7 @@ GO
 
 CREATE TABLE METODOS_PAGOS
 (
-    id_metodo_pago INT NOT NULL IDENTITY(1, 1),
+    id_metodo_pago BIGINT NOT NULL IDENTITY(1, 1),
     nombre VARCHAR(50) NOT NULL,
     CONSTRAINT PK_METODOS_PAGOS PRIMARY KEY (id_metodo_pago),
     CONSTRAINT UQ_METODOS_PAGOS_Nombre UNIQUE (nombre)
@@ -138,11 +138,11 @@ GO
 
 CREATE TABLE RESERVAS
 (
-    id_reserva INT NOT NULL IDENTITY(1, 1),
-    id_usuario INT NOT NULL,
-    id_funcion INT NOT NULL,
+    id_reserva BIGINT NOT NULL IDENTITY(1, 1),
+    id_usuario BIGINT NOT NULL,
+    id_funcion BIGINT NOT NULL,
     fecha_reserva DATETIME NOT NULL DEFAULT GETDATE(),
-    total_pagado DECIMAL(10, 2) NULL,
+    total_pagado MONEY NULL,
     estado VARCHAR(20) NOT NULL DEFAULT 'Pendiente',
     CONSTRAINT PK_RESERVAS PRIMARY KEY (id_reserva),
     CONSTRAINT FK_RESERVAS_USUARIOS FOREIGN KEY (id_usuario) REFERENCES USUARIOS (id_usuario),
@@ -154,11 +154,11 @@ GO
 
 CREATE TABLE PAGOS
 (
-    id_pago INT NOT NULL IDENTITY(1, 1),
-    id_reserva INT NOT NULL,
-    id_metodo_pago INT NOT NULL,
+    id_pago BIGINT NOT NULL IDENTITY(1, 1),
+    id_reserva BIGINT NOT NULL,
+    id_metodo_pago BIGINT NOT NULL,
     fecha_pago DATETIME NOT NULL DEFAULT GETDATE(),
-    total_pagado DECIMAL(10, 2) NOT NULL,
+    total_pagado MONEY NOT NULL,
     estado_pago VARCHAR(20) NOT NULL DEFAULT 'Pendiente',
     CONSTRAINT PK_PAGOS PRIMARY KEY (id_pago),
     CONSTRAINT FK_PAGOS_RESERVAS FOREIGN KEY (id_reserva) REFERENCES RESERVAS (id_reserva),
@@ -173,17 +173,15 @@ GO
 
 CREATE TABLE DETALLES_RESERVAS
 (
-    id_detalle INT NOT NULL IDENTITY(1, 1),
-    id_reserva INT NOT NULL,
-    id_butaca INT NOT NULL,
-    id_funcion INT NOT NULL,
+    id_detalle BIGINT NOT NULL IDENTITY(1, 1),
+    id_reserva BIGINT NOT NULL,
+    id_butaca BIGINT NOT NULL,
     precio_unitario MONEY NOT NULL,
     CONSTRAINT PK_DETALLES_RESERVAS PRIMARY KEY (id_detalle),
     CONSTRAINT FK_DETALLES_RESERVAS_RESERVAS FOREIGN KEY (id_reserva) REFERENCES RESERVAS (id_reserva),
     CONSTRAINT FK_DETALLES_RESERVAS_BUTACAS FOREIGN KEY (id_butaca) REFERENCES BUTACAS (id_butaca),
-    CONSTRAINT FK_DETALLES_RESERVAS_FUNCIONES FOREIGN KEY (id_funcion) REFERENCES FUNCIONES (id_funcion),
     CONSTRAINT CK_DETALLES_RESERVAS_Precio CHECK (precio_unitario >= 0),
-    CONSTRAINT UQ_DETALLES_RESERVAS_FuncionButaca UNIQUE (id_funcion, id_butaca)
+    CONSTRAINT UQ_DETALLES_RESERVAS_ReservaButaca UNIQUE (id_reserva, id_butaca)
 );
 GO
 
