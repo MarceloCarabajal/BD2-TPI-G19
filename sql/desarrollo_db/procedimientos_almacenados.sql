@@ -5,6 +5,61 @@ GO
 
 -- Gaston   (BD2-29)  sp_InsertarPelicula
 -- Gisela   (BD2-30)  sp_CrearFuncion
+CREATE PROCEDURE sp_CrearFuncion
+    @id_pelicula BIGINT,
+    @id_sala BIGINT,
+    @fecha_hora DATETIME,
+    @precio_base MONEY
+AS
+BEGIN
+    SET NOCOUNT ON;
+    -- Verificar si existe la película
+    IF NOT EXISTS (SELECT 1 FROM PELICULAS WHERE id_pelicula = @id_pelicula)
+    BEGIN
+        RAISERROR('Error: La película especificada no existe en el sistema.', 16, 1);
+        RETURN;
+    END;
+    -- Verificar si existe la sala
+    IF NOT EXISTS (SELECT 1 FROM SALAS WHERE id_sala = @id_sala)
+    BEGIN
+        RAISERROR('Error: La sala especificada no existe en el sistema.', 16, 1);
+        RETURN;
+    END;
+    --Verificar que el precio base sea valido
+    IF @precio_base <= 0
+    BEGIN
+        RAISERROR('Error: El precio base de la función debe ser mayor a cero.', 16, 1);
+        RETURN;
+    END;
+    -- Control de superposicion de horarios en la misma sala
+    -- Obtenemos la duracion de la pelicula que se quiere programar
+    DECLARE @duracion_nueva SMALLINT;
+    SELECT @duracion_nueva = duracion_minutos FROM PELICULAS WHERE id_pelicula = @id_pelicula;
+
+    -- Si no tiene duracion asignada, le estimamos un estándar de 120 min + 15 min de limpieza
+    IF @duracion_nueva IS NULL SET @duracion_nueva = 135;
+    ELSE SET @duracion_nueva = @duracion_nueva + 15;
+
+    -- Buscamos si hay cruces de horarios en esa misma sala
+    IF EXISTS (
+        SELECT 1 
+        FROM FUNCIONES f
+        INNER JOIN PELICULAS p ON f.id_pelicula = p.id_pelicula
+        WHERE f.id_sala = @id_sala
+          AND @fecha_hora >= f.fecha_hora 
+          AND @fecha_hora < DATEADD(MINUTE, ISNULL(p.duracion_minutos, 120) + 15, f.fecha_hora)
+    )
+    BEGIN
+        RAISERROR('Error: La sala ya se encuentra ocupada por otra función en ese rango horario.', 16, 1);
+        RETURN;
+    END;
+    --Si paso todos los controles, se registra la funcion
+    INSERT INTO FUNCIONES (id_pelicula, id_sala, fecha_hora, precio_base)
+    VALUES (@id_pelicula, @id_sala, @fecha_hora, @precio_base);
+
+    PRINT 'Función creada exitosamente.';
+END;
+GO
 -- Henry    (BD2-31)  sp_ReservasPorUsuario / sp_ButacasOcupadasPorFuncion
 -- Henry    (BD2-35)  sp_CrearReservaConDetalle  (BEGIN TRAN)
 
