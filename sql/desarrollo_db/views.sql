@@ -8,6 +8,42 @@ GO
 -- ============================================================
 -- Gaston   (BD2-23)
 
+--Listado de peliculas con clasificacion "ATP"
+
+SELECT
+    p.id_pelicula,
+    p.titulo,
+    p.sinopsis,
+    p.duracion_minutos,
+    c.descripcion AS clasificacion
+FROM PELICULAS p  
+    INNER JOIN CLASIFICACIONES c on c.id_clasificacion = p.id_clasificacion
+where c.descripcion = 'ATP';
+GO
+
+
+--Las peliculas que tengan una mayor duracion que el promedio
+
+SELECT 
+    id_pelicula,
+    titulo,
+    duracion_minutos
+FROM PELICULAS 
+WHERE duracion_minutos > (
+    SELECT AVG(duracion_minutos)
+    FROM PELICULAS 
+)
+ORDER BY duracion_minutos DESC
+
+--Los generos sin peliculas asociadas
+
+SELECT 
+    g.id_genero,
+    g.descripcion AS Generos_Sin_Pelicula
+FROM GENEROS g
+    LEFT JOIN PELICULAS p ON p.id_genero = g.id_genero
+WHERE p.id_pelicula IS NULL ;
+
 
 -- Gisela   (BD2-24)
 
@@ -95,6 +131,26 @@ GO
 -- PARTE 2: VISTAS
 -- ============================================================
 -- Gaston   (BD2-23)  CREATE VIEW vw_CarteleraPeliculas ...
+
+
+CREATE VIEW vw_CarteleraPeliculas AS
+
+SELECT
+    f.id_funcion,
+    p.titulo AS Pelicula ,
+    c.nombre As Complejo ,
+    s.nombre_sala ,
+    s.tipo_sala ,
+    f.fecha_hora ,
+    f.precio_base
+FROM FUNCIONES f
+    INNER JOIN PELICULAS p ON p.id_pelicula = f.id_pelicula
+    INNER JOIN SALAS s ON s.id_sala = f.id_sala
+    INNER JOIN COMPLEJOS c ON c.id_complejo = s.id_complejo
+GO
+
+--SELECT * FROM vw_CarteleraPeliculas
+GO
 
 -- Gisela   (BD2-24)  CREATE VIEW vw_FuncionesCompleto ...
 
