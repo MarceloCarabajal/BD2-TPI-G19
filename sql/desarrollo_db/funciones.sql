@@ -7,15 +7,15 @@ GO
 
 CREATE FUNCTION fn_ObtenerDuracionPelicula
 (
-    @idPelicula INT
+    @idPelicula BIGINT
 )
-RETURNS INT
+RETURNS SMALLINT
 AS
 BEGIN
-    DECLARE @Duracion INT;
+    DECLARE @Duracion SMALLINT;
 
     SELECT @Duracion = duracion_minutos 
-    FROM Peliculas                      
+    FROM PELICULAS                      
     WHERE id_pelicula = @idpelicula;  
 
     -- Si la película no existe o no tiene duración se devuelve 0
