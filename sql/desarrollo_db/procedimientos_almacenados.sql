@@ -63,7 +63,7 @@ GO
 -- Henry    (BD2-31)  sp_ReservasPorUsuario / sp_ButacasOcupadasPorFuncion
 -- Henry    (BD2-35)  sp_CrearReservaConDetalle  (BEGIN TRAN)
 
--- Marcelo  (BD2-32)  
+-- Marcelo  (BD2-32, BD2-36)
 CREATE PROCEDURE sp_RegistrarPago
     @id_reserva BIGINT,
     @id_metodo_pago BIGINT,
@@ -71,6 +71,7 @@ CREATE PROCEDURE sp_RegistrarPago
 AS
 BEGIN
     SET NOCOUNT ON;
+
     IF NOT EXISTS (SELECT 1 FROM RESERVAS WHERE id_reserva = @id_reserva)
     BEGIN
         RAISERROR('La reserva no existe.', 16, 1);
@@ -99,11 +100,27 @@ BEGIN
         RAISERROR('El total pagado debe ser mayor a cero.', 16, 1);
         RETURN;
     END
-    INSERT INTO PAGOS (id_reserva, id_metodo_pago, total_pagado, estado_pago)
-    VALUES (@id_reserva, @id_metodo_pago, @total_pagado, 'Aprobado');
-    UPDATE RESERVAS
-    SET estado = 'Pagada', total_pagado = @total_pagado
-    WHERE id_reserva = @id_reserva;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        INSERT INTO PAGOS (id_reserva, id_metodo_pago, total_pagado, estado_pago)
+        VALUES (@id_reserva, @id_metodo_pago, @total_pagado, 'Aprobado');
+
+        UPDATE RESERVAS
+        SET estado = 'Pagada', total_pagado = @total_pagado
+        WHERE id_reserva = @id_reserva;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR(@ErrorMessage, 16, 1);
+        RETURN;
+    END CATCH
 END;
 GO
 
@@ -125,7 +142,6 @@ BEGIN
     WHERE id_reserva = @id_reserva AND estado_pago = 'Aprobado';
 END;
 GO
--- Pruebas BD2-32
+-- Pruebas BD2-32 / BD2-36
  EXEC sp_RegistrarPago @id_reserva = 3, @id_metodo_pago = 1, @total_pagado = 2800.00;
 GO
--- Marcelo  (BD2-36)  TRY/CATCH + TRAN en sp_RegistrarPago
