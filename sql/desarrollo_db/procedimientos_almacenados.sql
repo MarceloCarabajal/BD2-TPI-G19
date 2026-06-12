@@ -4,6 +4,44 @@ SET DATEFORMAT ymd;
 GO
 
 -- Gaston   (BD2-29)  sp_InsertarPelicula
+
+
+CREATE PROCEDURE sp_InsertarPelicula
+    @ID_Clasificaciones BIGINT,
+    @ID_Genero BIGINT,
+    @Titulo VARCHAR(100),
+    @Sinopsis VARCHAR (1000),
+    @Duracion SMALLINT
+AS
+BEGIN
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        --iNSERTAMOS LOS DATOS RECIBIDOS EN LA TABLA PELICULAS
+        INSERT INTO PELICULAS (id_clasificacion, id_genero, titulo,sinopsis, duracion_minutos)
+        VALUES (@ID_Clasificaciones , @ID_Genero , @Titulo, @Sinopsis, @Duracion);
+
+        -- SI TODO SALE BIEN CONFIRMAMOS LOS CAMBIOS
+        COMMIT TRANSACTION;
+        PRINT 'Película insertada con éxito.';
+    END TRY
+    BEGIN CATCH
+        --SI FALLA SE DESHACE TODO
+        IF @@TRANCOUNT > 0
+        BEGIN
+            ROLLBACK TRANSACTION;
+        END
+
+        PRINT 'Error al intentar insertar la película.';
+        THROW;
+    END CATCH
+END;
+GO
+
+
+--#####################################################################################
+
+
 -- Gisela   (BD2-30)  sp_CrearFuncion
 CREATE PROCEDURE sp_CrearFuncion
     @id_pelicula BIGINT,
