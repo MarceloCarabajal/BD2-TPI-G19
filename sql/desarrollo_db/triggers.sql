@@ -35,6 +35,24 @@ BEGIN
 END;
 GO
 
+-- Marcelo  (BD2-61)  TR_Pagos_AlEliminarRevertirReserva
+-- BD2-61: si se elimina un pago aprobado, la reserva vuelve a Pendiente
+CREATE TRIGGER TR_Pagos_AlEliminarRevertirReserva
+ON PAGOS
+AFTER DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE r
+    SET r.estado = 'Pendiente',
+        r.total_pagado = NULL
+    FROM RESERVAS r
+        INNER JOIN deleted d ON r.id_reserva = d.id_reserva
+    WHERE d.estado_pago = 'Aprobado'
+      AND r.estado <> 'Cancelada';
+END;
+GO
+
 -- Pruebas BD2-34 (ejecutar tras scripts 1-4; reserva 3 debe estar Pendiente sin pago)
 -- SELECT id_reserva, estado, total_pagado FROM RESERVAS WHERE id_reserva IN (1, 2, 3, 4);
 -- GO
