@@ -51,11 +51,11 @@ BEGIN
     BEGIN CATCH
         --SI FALLA SE DESHACE TODO
         IF @@TRANCOUNT > 0
-        BEGIN
             ROLLBACK TRANSACTION;
-        END
 
-        THROW;
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR(@ErrorMessage, 16, 1);
+        RETURN;
     END CATCH
 END;
 GO
