@@ -200,5 +200,5 @@ BEGIN
 END;
 GO
 -- Pruebas BD2-32 / BD2-36
- EXEC sp_RegistrarPago @id_reserva = 3, @id_metodo_pago = 1, @total_pagado = 2800.00;
-GO
+--  EXEC sp_RegistrarPago @id_reserva = 3, @id_metodo_pago = 1, @total_pagado = 2800.00;
+-- GO
