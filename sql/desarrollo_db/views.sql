@@ -8,7 +8,7 @@ GO
 -- ============================================================
 -- Gaston   (BD2-23)
 
---Listado de peliculas con clasificacion "ATP"
+-- Listado de peliculas con clasificacion "ATP"
 
 SELECT
     p.id_pelicula,
@@ -18,11 +18,11 @@ SELECT
     c.descripcion AS clasificacion
 FROM PELICULAS p  
     INNER JOIN CLASIFICACIONES c on c.id_clasificacion = p.id_clasificacion
-where c.descripcion = 'ATP';
+WHERE c.descripcion = 'ATP';
 GO
 
 
---Las peliculas que tengan una mayor duracion que el promedio
+-- Las peliculas que tengan una mayor duracion que el promedio
 
 SELECT 
     id_pelicula,
@@ -35,7 +35,7 @@ WHERE duracion_minutos > (
 )
 ORDER BY duracion_minutos DESC
 
---Los generos sin peliculas asociadas
+-- Los generos sin peliculas asociadas
 
 SELECT 
     g.id_genero,
@@ -86,6 +86,82 @@ GO
 
 -- Henry    (BD2-25, BD2-27 integradoras)
 
+-- Consulta 1: Usuarios sin reservas
+SELECT
+    u.id_usuario,
+    u.nombre,
+    u.apellido,
+    u.email,
+    u.fecha_registro
+FROM USUARIOS u
+LEFT JOIN RESERVAS r ON u.id_usuario = r.id_usuario
+WHERE r.id_reserva IS NULL
+
+-- Consulta 2: Butacas sin reservas
+SELECT
+    s.id_complejo,
+    s.id_sala,
+    b.id_butaca,
+    b.fila AS fila_de_butaca,
+    b.numero AS numero_de_butaca,
+    f.id_funcion,
+    f.fecha_hora
+FROM BUTACAS b
+LEFT JOIN SALAS s ON b.id_sala = s.id_sala
+LEFT JOIN FUNCIONES f ON s.id_sala = f.id_sala
+LEFT JOIN RESERVAS r ON f.id_funcion = r.id_funcion
+WHERE r.id_reserva IS NULL
+
+-- Consulta 3: Cantidad de butacas por reserva
+SELECT
+    r.id_reserva,
+    r.id_usuario,
+    r.id_funcion,
+    COUNT(dr.id_butaca) AS cantidad_de_butacas_reservadas,
+    r.fecha_reserva,
+    r.total_pagado,
+    r.estado
+FROM RESERVAS r
+INNER JOIN DETALLES_RESERVAS dr ON r.id_reserva = dr.id_reserva
+GROUP BY r.id_reserva,
+         r.id_usuario,
+         r.id_funcion,
+         r.fecha_reserva,
+         r.total_pagado,
+         r.estado
+
+-- Consulta 4: Reservas pendientes por usuarios
+SELECT
+    r.id_reserva,
+    r.id_usuario,
+    u.nombre,
+    u.apellido,
+    u.email,
+    r.id_funcion,
+    r.fecha_reserva,
+    r.total_pagado,
+    r.estado
+FROM RESERVAS r
+INNER JOIN USUARIOS u ON r.id_usuario = u.id_usuario
+WHERE r.estado LIKE 'Pendiente'
+
+-- Consulta 5: Top 5 usuarios con más reservas 
+SELECT TOP (5) WITH TIES
+    u.id_usuario,
+    u.nombre,
+    u.apellido,
+    u.email,
+    u.fecha_registro,
+    COUNT(r.id_reserva) AS cantidad_reservas
+FROM USUARIOS u
+INNER JOIN RESERVAS r ON u.id_usuario = r.id_usuario
+GROUP BY u.id_usuario,
+         u.nombre,
+         u.apellido,
+         u.email,
+         u.fecha_registro
+ORDER BY cantidad_reservas DESC, u.id_usuario ASC
+
 -- Marcelo  (BD2-26)
 
 -- Consulta 1: reservas Pendientes sin registro de pago
@@ -132,16 +208,17 @@ GO
 -- ============================================================
 -- Gaston   (BD2-23)  CREATE VIEW vw_CarteleraPeliculas ...
 
+-- BD2-23: Vista 1: vw_CarteleraPeliculas
 
 CREATE VIEW vw_CarteleraPeliculas AS
 
 SELECT
     f.id_funcion,
-    p.titulo AS Pelicula ,
-    c.nombre As Complejo ,
-    s.nombre_sala ,
-    s.tipo_sala ,
-    f.fecha_hora ,
+    p.titulo AS Pelicula,
+    c.nombre As Complejo,
+    s.nombre_sala,
+    s.tipo_sala,
+    f.fecha_hora,
     f.precio_base
 FROM FUNCIONES f
     INNER JOIN PELICULAS p ON p.id_pelicula = f.id_pelicula
@@ -149,12 +226,12 @@ FROM FUNCIONES f
     INNER JOIN COMPLEJOS c ON c.id_complejo = s.id_complejo
 GO
 
---SELECT * FROM vw_CarteleraPeliculas
+-- SELECT * FROM vw_CarteleraPeliculas
 GO
 
 -- Gisela   (BD2-24)  CREATE VIEW vw_FuncionesCompleto ...
 
--- BD2-24 : Vista 1: vw_FuncionesCompleto
+-- BD2-24: Vista 1: vw_FuncionesCompleto
 -- Consolida cartelera, salas, complejos y clasificaciones
 
 CREATE VIEW vw_FuncionesCompleto AS
@@ -178,6 +255,7 @@ INNER JOIN SALAS s ON f.id_sala = s.id_sala
 INNER JOIN COMPLEJOS c ON s.id_complejo = c.id_complejo;
 GO
 
+-- SELECT * FROM vw_FuncionesCompleto;
 
 -- BD2-24: Vista 2: vw_ButacasLibresPorFuncion (Pedido Profe Laura)
 -- Muestra que asientos fisicos no estan ocupados en cada funcion, resolviendo la relacion a traves de la tabla intermedia RESERVAS.
@@ -204,10 +282,35 @@ LEFT JOIN (
 WHERE ocupadas.id_butaca IS NULL; -- Si es NULL, la butaca esta libre para esa funcion
 GO
 
+-- SELECT * FROM vw_ButacasLibresPorFuncion;
+
 -- Henry    (BD2-25)  CREATE VIEW vw_DetalleReservasCompleto ...
+-- BD2-25: Vista 1: vw_DetalleReservasCompleto
+
+CREATE VIEW vw_DetalleReservasCompleto AS
+SELECT
+    r.id_reserva,
+    r.id_usuario,
+    u.nombre,
+    u.apellido,
+    u.email,
+    u.fecha_registro as fecha_registro_usuario,
+    r.id_funcion,
+    dr.id_butaca,
+    dr.precio_unitario,
+    r.total_pagado,
+    r.fecha_reserva,
+    r.estado AS estado_reserva
+FROM RESERVAS r
+INNER JOIN DETALLES_RESERVAS dr ON r.id_reserva = dr.id_reserva
+INNER JOIN USUARIOS u ON r.id_usuario = u.id_usuario;
+GO
+
+-- SELECT * FROM vw_DetalleReservasCompleto;
+
 -- Marcelo  (BD2-26)
 
--- BD2-26: pagos aprobados con reserva, metodo de pago y usuario
+-- BD2-26: Vista 1: pagos aprobados con reserva, metodo de pago y usuario
 CREATE VIEW vw_PagosAprobados
 AS
     SELECT
@@ -225,7 +328,7 @@ AS
     WHERE p.estado_pago = 'Aprobado';
 GO
 
--- BD2-26: recaudacion agrupada por metodo de pago
+-- BD2-26: Vista 2: recaudacion agrupada por metodo de pago
 CREATE VIEW vw_RecaudacionPorMetodoPago
 AS
     SELECT
@@ -241,4 +344,4 @@ GO
 -- Pruebas BD2-26
 -- SELECT * FROM vw_PagosAprobados;
 -- SELECT * FROM vw_RecaudacionPorMetodoPago;
-GO
+-- GO
