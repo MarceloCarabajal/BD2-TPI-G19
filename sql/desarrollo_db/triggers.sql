@@ -4,6 +4,7 @@ SET DATEFORMAT ymd;
 GO
 
 -- Gaston
+
 -- Gisela   (BD2-33) TR_Funciones_BloquearCambioHorarioConReservas
 -- Propósito: Automatiza el control de integridad comercial. 
 -- Impide modificar el horario de una función si ya registra reservas asociadas
@@ -30,6 +31,35 @@ BEGIN
             ROLLBACK TRANSACTION; -- Cancela el UPDATE erroneo y restaura el horario previo
             RETURN;
         END;
+    END;
+END;
+GO
+
+-- Gisela   (BD2-62)  TR_DetallesReservas_EvitarButacaDuplicada
+-- Proposito: Impide que dos reservas distintas asignen la misma  
+--butaca para la misma funcion durante un INSERT.
+
+CREATE TRIGGER TR_DetallesReservas_EvitarButacaDuplicada
+ON DETALLES_RESERVAS
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1
+        FROM inserted i
+        INNER JOIN RESERVAS r_nueva ON i.id_reserva = r_nueva.id_reserva
+        INNER JOIN DETALLES_RESERVAS dr ON dr.id_butaca = i.id_butaca
+        INNER JOIN RESERVAS r_vieja ON dr.id_reserva = r_vieja.id_reserva
+        WHERE r_nueva.id_funcion = r_vieja.id_funcion  
+          AND r_nueva.id_reserva <> r_vieja.id_reserva 
+          AND r_vieja.estado <> 'Cancelada'            
+    )
+    BEGIN
+        RAISERROR('Error: La butaca seleccionada ya se encuentra reservada para esta función.', 16, 1);
+        ROLLBACK TRANSACTION;
+        RETURN;
     END;
 END;
 GO
@@ -101,4 +131,5 @@ GO
 -- UPDATE PAGOS SET estado_pago = 'Devuelto' WHERE id_reserva = 3 AND estado_pago = 'Aprobado';
 -- GO
 -- SELECT id_reserva, estado, total_pagado FROM RESERVAS WHERE id_reserva = 3;
+-- GO
 -- GO
