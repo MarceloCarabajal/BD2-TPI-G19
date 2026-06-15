@@ -4,6 +4,63 @@ SET DATEFORMAT ymd;
 GO
 
 -- Gaston   (BD2-29)  sp_InsertarPelicula
+
+
+CREATE PROCEDURE sp_InsertarPelicula
+    @ID_Clasificaciones BIGINT,
+    @ID_Genero BIGINT,
+    @Titulo VARCHAR(150),
+    @Sinopsis VARCHAR (1000),
+    @Duracion SMALLINT
+AS
+BEGIN
+
+
+    --VALIDAMOS SI LA DURACION ES MAYOR A 0
+    IF @Duracion <= 0
+    BEGIN
+        RAISERROR('La duración de la película debe ser mayor a 0 minutos.', 16, 1);
+        RETURN;
+    END
+
+    -- VALIDAMOS LA EXISTENCIA DE LA CLASIFICACION 
+    IF NOT EXISTS (SELECT 1 FROM CLASIFICACIONES WHERE id_clasificacion = @ID_Clasificaciones)
+    BEGIN
+        RAISERROR('La clasificación especificada no existe.', 16, 1);
+        RETURN;
+    END
+
+    --VALIDAMOS LA EXISTENCIA DEL GENERO
+    IF NOT EXISTS (SELECT 1 FROM GENEROS WHERE id_genero = @ID_Genero)
+    BEGIN
+        RAISERROR('El género especificado no existe.', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        --iNSERTAMOS LOS DATOS RECIBIDOS EN LA TABLA PELICULAS
+        INSERT INTO PELICULAS (id_clasificacion, id_genero, titulo,sinopsis, duracion_minutos)
+        VALUES (@ID_Clasificaciones , @ID_Genero , @Titulo, @Sinopsis, @Duracion);
+
+        -- SI TODO SALE BIEN CONFIRMAMOS LOS CAMBIOS
+        COMMIT TRANSACTION;
+        PRINT 'Película insertada con éxito.';
+    END TRY
+    BEGIN CATCH
+        --SI FALLA SE DESHACE TODO
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR(@ErrorMessage, 16, 1);
+        RETURN;
+    END CATCH
+END;
+GO
+
+
 -- Gisela   (BD2-30)  sp_CrearFuncion
 CREATE PROCEDURE sp_CrearFuncion
     @id_pelicula BIGINT,
@@ -63,7 +120,7 @@ GO
 -- Henry    (BD2-31)  sp_ReservasPorUsuario / sp_ButacasOcupadasPorFuncion
 -- Henry    (BD2-35)  sp_CrearReservaConDetalle  (BEGIN TRAN)
 
--- Marcelo  (BD2-32)  
+-- Marcelo  (BD2-32, BD2-36)
 CREATE PROCEDURE sp_RegistrarPago
     @id_reserva BIGINT,
     @id_metodo_pago BIGINT,
@@ -71,6 +128,7 @@ CREATE PROCEDURE sp_RegistrarPago
 AS
 BEGIN
     SET NOCOUNT ON;
+
     IF NOT EXISTS (SELECT 1 FROM RESERVAS WHERE id_reserva = @id_reserva)
     BEGIN
         RAISERROR('La reserva no existe.', 16, 1);
@@ -99,11 +157,27 @@ BEGIN
         RAISERROR('El total pagado debe ser mayor a cero.', 16, 1);
         RETURN;
     END
-    INSERT INTO PAGOS (id_reserva, id_metodo_pago, total_pagado, estado_pago)
-    VALUES (@id_reserva, @id_metodo_pago, @total_pagado, 'Aprobado');
-    UPDATE RESERVAS
-    SET estado = 'Pagada', total_pagado = @total_pagado
-    WHERE id_reserva = @id_reserva;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        INSERT INTO PAGOS (id_reserva, id_metodo_pago, total_pagado, estado_pago)
+        VALUES (@id_reserva, @id_metodo_pago, @total_pagado, 'Aprobado');
+
+        UPDATE RESERVAS
+        SET estado = 'Pagada', total_pagado = @total_pagado
+        WHERE id_reserva = @id_reserva;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR(@ErrorMessage, 16, 1);
+        RETURN;
+    END CATCH
 END;
 GO
 
@@ -125,7 +199,6 @@ BEGIN
     WHERE id_reserva = @id_reserva AND estado_pago = 'Aprobado';
 END;
 GO
--- Pruebas BD2-32
- EXEC sp_RegistrarPago @id_reserva = 3, @id_metodo_pago = 1, @total_pagado = 2800.00;
-GO
--- Marcelo  (BD2-36)  TRY/CATCH + TRAN en sp_RegistrarPago
+-- Pruebas BD2-32 / BD2-36
+--  EXEC sp_RegistrarPago @id_reserva = 3, @id_metodo_pago = 1, @total_pagado = 2800.00;
+-- GO

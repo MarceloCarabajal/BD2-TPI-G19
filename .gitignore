@@ -1,0 +1,20 @@
+# Visual Studio / .NET
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.pdb
+*.exe
+*.dll
+!**/Properties/*.dll
+
+# NuGet (packages.config — restaurar con Restore NuGet Packages)
+packages/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+
+**/.github/copilot-instructions.md

@@ -102,4 +102,3 @@ GO
 -- GO
 -- SELECT id_reserva, estado, total_pagado FROM RESERVAS WHERE id_reserva = 3;
 -- GO
--- GO
