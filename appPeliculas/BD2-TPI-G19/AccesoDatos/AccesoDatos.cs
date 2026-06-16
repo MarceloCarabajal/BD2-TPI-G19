@@ -1,10 +1,7 @@
 using System;
 using Microsoft.Data.SqlClient;
 
-
-
-
-namespace AccesoDatos
+namespace Acceso_Datos
 {
     public class AccesoDatos
     {
