@@ -241,4 +241,4 @@ GO
 -- Pruebas BD2-26
 -- SELECT * FROM vw_PagosAprobados;
 -- SELECT * FROM vw_RecaudacionPorMetodoPago;
-GO
+--GO

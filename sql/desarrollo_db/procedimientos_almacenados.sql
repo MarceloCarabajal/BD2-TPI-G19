@@ -4,6 +4,63 @@ SET DATEFORMAT ymd;
 GO
 
 -- Gaston   (BD2-29)  sp_InsertarPelicula
+
+
+CREATE PROCEDURE sp_InsertarPelicula
+    @ID_Clasificaciones BIGINT,
+    @ID_Genero BIGINT,
+    @Titulo VARCHAR(150),
+    @Sinopsis VARCHAR (1000),
+    @Duracion SMALLINT
+AS
+BEGIN
+
+
+    --VALIDAMOS SI LA DURACION ES MAYOR A 0
+    IF @Duracion <= 0
+    BEGIN
+        RAISERROR('La duración de la película debe ser mayor a 0 minutos.', 16, 1);
+        RETURN;
+    END
+
+    -- VALIDAMOS LA EXISTENCIA DE LA CLASIFICACION 
+    IF NOT EXISTS (SELECT 1 FROM CLASIFICACIONES WHERE id_clasificacion = @ID_Clasificaciones)
+    BEGIN
+        RAISERROR('La clasificación especificada no existe.', 16, 1);
+        RETURN;
+    END
+
+    --VALIDAMOS LA EXISTENCIA DEL GENERO
+    IF NOT EXISTS (SELECT 1 FROM GENEROS WHERE id_genero = @ID_Genero)
+    BEGIN
+        RAISERROR('El género especificado no existe.', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        --iNSERTAMOS LOS DATOS RECIBIDOS EN LA TABLA PELICULAS
+        INSERT INTO PELICULAS (id_clasificacion, id_genero, titulo,sinopsis, duracion_minutos)
+        VALUES (@ID_Clasificaciones , @ID_Genero , @Titulo, @Sinopsis, @Duracion);
+
+        -- SI TODO SALE BIEN CONFIRMAMOS LOS CAMBIOS
+        COMMIT TRANSACTION;
+        PRINT 'Película insertada con éxito.';
+    END TRY
+    BEGIN CATCH
+        --SI FALLA SE DESHACE TODO
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR(@ErrorMessage, 16, 1);
+        RETURN;
+    END CATCH
+END;
+GO
+
+
 -- Gisela   (BD2-30)  sp_CrearFuncion
 CREATE PROCEDURE sp_CrearFuncion
     @id_pelicula BIGINT,
