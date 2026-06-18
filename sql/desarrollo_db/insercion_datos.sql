@@ -74,15 +74,13 @@ GO
 -- INSERTS PARA LA TABLA: FUNCIONES
 
 INSERT INTO FUNCIONES (id_pelicula, id_sala, fecha_hora, precio_base) VALUES
-    (1, 1, '2026-06-15 18:00:00', 4500.00), -- Película 1 en Sala 1 (IMAX)
-    (2, 2, '2026-06-15 21:30:00', 3500.00), -- Película 2 en Sala 2 (3D)
-    (3, 3, '2026-06-16 15:00:00', 2800.00), -- Película 3 en Sala 3 (2D)
-    (4, 4, '2026-06-16 20:00:00', 3500.00), -- Película 4 en Sala 4 (3D)
-    (5, 5, '2026-06-17 19:15:00', 2500.00), -- Película 5 en Sala 5 (2D)
-    (1, 6, '2026-06-17 22:00:00', 3500.00); -- Película 1 en Sala 6 (3D)
+    (1, 1, DATEADD(hour, 18, DATEADD(day, 7, CAST(CAST(GETDATE() AS DATE) AS DATETIME))), 4500.00),
+    (2, 2, DATEADD(hour, 21, DATEADD(minute, 30, DATEADD(day, 7, CAST(CAST(GETDATE() AS DATE) AS DATETIME)))), 3500.00),
+    (3, 3, DATEADD(hour, 15, DATEADD(day, 8, CAST(CAST(GETDATE() AS DATE) AS DATETIME))), 2800.00),
+    (4, 4, DATEADD(hour, 20, DATEADD(day, 8, CAST(CAST(GETDATE() AS DATE) AS DATETIME))), 3500.00),
+    (5, 5, DATEADD(hour, 19, DATEADD(minute, 15, DATEADD(day, 9, CAST(CAST(GETDATE() AS DATE) AS DATETIME)))), 2500.00),
+    (1, 6, DATEADD(hour, 22, DATEADD(day, 9, CAST(CAST(GETDATE() AS DATE) AS DATETIME))), 3500.00);
 GO
--- SELECT * FROM FUNCIONES;
-
 
 -- Henry (Parte 1)
 
