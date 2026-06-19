@@ -118,6 +118,49 @@ BEGIN
 END;
 GO
 -- Henry    (BD2-31)  sp_ReservasPorUsuario / sp_ButacasOcupadasPorFuncion
+CREATE PROCEDURE sp_ReservasPorUsuario
+    @id_usuario BIGINT
+AS
+BEGIN
+    SELECT
+        vw_drc.id_reserva,
+        vw_drc.id_usuario,
+        vw_drc.nombre,
+        vw_drc.apellido,
+        vw_drc.email,
+        vw_drc.fecha_registro as fecha_registro_usuario,
+        vw_drc.id_funcion,
+        vw_drc.id_butaca,
+        vw_drc.precio_unitario,
+        vw_drc.total_pagado,
+        vw_drc.fecha_reserva,
+        vw_drc.estado AS estado_reserva
+    FROM vw_DetalleReservasCompleto vw_drc
+    WHERE id_usuario = @id_usuario
+    ORDER BY vw_drc.fecha_reserva DESC, vw_drc.id_reserva ASC
+END;
+GO
+
+CREATE PROCEDURE sp_ButacasOcupadasPorFuncion
+    @id_funcion BIGINT
+AS
+BEGIN
+    SELECT
+        s.id_complejo,
+        s.id_sala,
+        b.id_butaca,
+        b.fila AS fila_de_butaca,
+        b.numero AS numero_de_butaca,
+        f.id_funcion,
+        f.fecha_hora
+    FROM BUTACAS b
+    LEFT JOIN SALAS s ON b.id_sala = s.id_sala
+    LEFT JOIN FUNCIONES f ON s.id_sala = f.id_sala
+    LEFT JOIN RESERVAS r ON f.id_funcion = r.id_funcion
+    WHERE r.id_reserva IS NULL
+END;
+GO
+
 -- Henry    (BD2-35)  sp_CrearReservaConDetalle  (BEGIN TRAN)
 
 -- Marcelo  (BD2-32, BD2-36)
