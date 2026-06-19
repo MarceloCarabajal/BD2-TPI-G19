@@ -95,24 +95,10 @@ SELECT
     u.fecha_registro
 FROM USUARIOS u
 LEFT JOIN RESERVAS r ON u.id_usuario = r.id_usuario
-WHERE r.id_reserva IS NULL
+WHERE r.id_reserva IS NULL;
+GO
 
--- Consulta 2: Butacas sin reservas
-SELECT
-    s.id_complejo,
-    s.id_sala,
-    b.id_butaca,
-    b.fila AS fila_de_butaca,
-    b.numero AS numero_de_butaca,
-    f.id_funcion,
-    f.fecha_hora
-FROM BUTACAS b
-LEFT JOIN SALAS s ON b.id_sala = s.id_sala
-LEFT JOIN FUNCIONES f ON s.id_sala = f.id_sala
-LEFT JOIN RESERVAS r ON f.id_funcion = r.id_funcion
-WHERE r.id_reserva IS NULL
-
--- Consulta 3: Cantidad de butacas por reserva
+-- Consulta 2: Cantidad de butacas por reserva
 SELECT
     r.id_reserva,
     r.id_usuario,
@@ -128,9 +114,10 @@ GROUP BY r.id_reserva,
          r.id_funcion,
          r.fecha_reserva,
          r.total_pagado,
-         r.estado
+         r.estado;
+GO
 
--- Consulta 4: Reservas pendientes por usuarios
+-- Consulta 3: Reservas pendientes por usuarios
 SELECT
     r.id_reserva,
     r.id_usuario,
@@ -143,9 +130,10 @@ SELECT
     r.estado
 FROM RESERVAS r
 INNER JOIN USUARIOS u ON r.id_usuario = u.id_usuario
-WHERE r.estado LIKE 'Pendiente'
+WHERE r.estado = 'Pendiente';
+GO
 
--- Consulta 5: Top 5 usuarios con más reservas 
+-- Consulta 4: Top 5 usuarios con más reservas 
 SELECT TOP (5) WITH TIES
     u.id_usuario,
     u.nombre,
@@ -160,7 +148,8 @@ GROUP BY u.id_usuario,
          u.apellido,
          u.email,
          u.fecha_registro
-ORDER BY cantidad_reservas DESC, u.id_usuario ASC
+ORDER BY cantidad_reservas DESC, u.id_usuario ASC;
+GO
 
 -- Marcelo  (BD2-26)
 
@@ -345,6 +334,3 @@ GO
 -- SELECT * FROM vw_PagosAprobados;
 -- SELECT * FROM vw_RecaudacionPorMetodoPago;
 -- GO
-
-PRINT 'Todos las consultas y vistas de la Base de datos BD2_TPI_G19 fueron creadas correctamente.';
-GO
