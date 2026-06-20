@@ -83,7 +83,6 @@ LEFT JOIN FUNCIONES f ON s.id_sala = f.id_sala
 WHERE f.id_funcion IS NULL;
 GO
 
-
 -- Henry    (BD2-25, BD2-27 integradoras)
 
 -- Consulta 1: Usuarios sin reservas
