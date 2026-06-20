@@ -1,7 +1,7 @@
 
-BD2-37 — Prueba de manejo de errores con sp_RegistrarPago
-Requisitos: scripts 1→6 ejecutados (insercion_datos + procedimientos + triggers).
-Usa reserva 3: estado inicial Pendiente, sin pago (ver insercion_datos.sql).
+-- BD2-37 — Prueba de manejo de errores con sp_RegistrarPago
+-- Requisitos: scripts 1→6 ejecutados (insercion_datos + procedimientos + triggers).
+-- Usa reserva 3: estado inicial Pendiente, sin pago (ver insercion_datos.sql).
 
 USE BD2_TPI_G19;
 GO
