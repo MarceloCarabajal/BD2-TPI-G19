@@ -41,6 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CarteleraPelicula.cs" />
+    <Compile Include="CatalogoItem.cs" />
+    <Compile Include="FuncionCompleta.cs" />
     <Compile Include="MetodoPago.cs" />
     <Compile Include="Pago.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
