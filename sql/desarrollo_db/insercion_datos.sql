@@ -3,7 +3,7 @@ GO
 SET DATEFORMAT ymd;
 GO
 
---Gaston
+-- Gaston
 
 -- INSERTS PARA LA TABLA: CLASIFICACIONES
 
@@ -15,8 +15,7 @@ INSERT INTO CLASIFICACIONES (descripcion) VALUES
 GO
 -- SELECT * FROM CLASIFICACIONES;
 
-
---  INSERTS PARA LA TABLA: GENEROS
+-- INSERTS PARA LA TABLA: GENEROS
 
 INSERT INTO GENEROS (descripcion) VALUES
 ('Acción'),
@@ -27,7 +26,6 @@ INSERT INTO GENEROS (descripcion) VALUES
 ('Animación');
 GO
 -- SELECT * FROM GENEROS;
-
 
 -- INSERTS PARA LA TABLA: PELICULAS
 
@@ -43,7 +41,6 @@ INSERT INTO PELICULAS (id_clasificacion, id_genero, titulo, sinopsis, duracion_m
 GO
 -- SELECT * FROM PELICULAS;
 
-
 -- Gisela
 
 -- INSERTS PARA LA TABLA: COMPLEJOS
@@ -57,7 +54,6 @@ INSERT INTO COMPLEJOS (nombre, direccion, telefono) VALUES
 GO
 -- SELECT * FROM COMPLEJOS;
 
-
 -- INSERTS PARA LA TABLA: SALAS
 
 INSERT INTO SALAS (id_complejo, nombre_sala, capacidad_total, tipo_sala) VALUES
@@ -70,7 +66,6 @@ INSERT INTO SALAS (id_complejo, nombre_sala, capacidad_total, tipo_sala) VALUES
 GO
 -- SELECT * FROM SALAS;
 
-
 -- INSERTS PARA LA TABLA: FUNCIONES
 
 INSERT INTO FUNCIONES (id_pelicula, id_sala, fecha_hora, precio_base) VALUES
@@ -81,6 +76,7 @@ INSERT INTO FUNCIONES (id_pelicula, id_sala, fecha_hora, precio_base) VALUES
     (5, 5, DATEADD(hour, 19, DATEADD(minute, 15, DATEADD(day, 9, CAST(CAST(GETDATE() AS DATE) AS DATETIME)))), 2500.00),
     (1, 6, DATEADD(hour, 22, DATEADD(day, 9, CAST(CAST(GETDATE() AS DATE) AS DATETIME))), 3500.00);
 GO
+-- SELECT * FROM FUNCIONES;
 
 -- Henry (Parte 1)
 
@@ -110,7 +106,6 @@ INSERT INTO BUTACAS (id_sala, fila, numero) VALUES
 GO
 -- SELECT * FROM BUTACAS;
 
-
 -- Marcelo
 
 -- INSERTS PARA LA TABLA: METODOS_PAGOS
@@ -124,7 +119,6 @@ INSERT INTO METODOS_PAGOS (nombre) VALUES
 GO
 -- SELECT * FROM METODOS_PAGOS;
 
-
 -- INSERTS PARA LA TABLA: RESERVAS
 
 INSERT INTO RESERVAS (id_usuario, id_funcion, fecha_reserva, total_pagado, estado) VALUES
@@ -136,7 +130,6 @@ INSERT INTO RESERVAS (id_usuario, id_funcion, fecha_reserva, total_pagado, estad
 GO
 -- SELECT * FROM RESERVAS;
 
-
 -- INSERTS PARA LA TABLA: PAGOS
 
 INSERT INTO PAGOS (id_reserva, id_metodo_pago, fecha_pago, total_pagado, estado_pago) VALUES
@@ -145,7 +138,6 @@ INSERT INTO PAGOS (id_reserva, id_metodo_pago, fecha_pago, total_pagado, estado_
     (4, 2, '2026-05-13 20:10:00', 10400.00, 'Aprobado');
 GO
 -- SELECT * FROM PAGOS;
-
 
 -- Henry (Parte 2)
 
@@ -161,7 +153,6 @@ INSERT INTO DETALLES_RESERVAS
     (5, 7, 3500.00); -- Reserva 5 (Función 6 - Sala 6) -> Usa Butaca 7 (Sala 6)
 GO
 -- SELECT * FROM DETALLES_RESERVAS;
--- GO
 
 PRINT 'Todos los registros de la Base de datos BD2_TPI_G19 fueron insertados correctamente.';
 GO
