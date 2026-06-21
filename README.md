@@ -42,7 +42,7 @@ docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=BaseDatos#2" -e "MSSQL_PID=E
 ```
 
 - Servidor: `localhost`, puerto **1433**
-- Usuario: **`mssql`**
+- Usuario: **`sa`**
 - Contraseña: **`BaseDatos#2`** (solo desarrollo local)
 
 ---
@@ -51,7 +51,13 @@ docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=BaseDatos#2" -e "MSSQL_PID=E
 
 ```
 BD2-TPI-G19/
-├── appPeliculas/              # aplicación cliente (fuera del alcance DDL)
+├── appPeliculas/
+│   └── BD2-TPI-G19/
+│       ├── BD2-TPI-G19.sln              # solución WinForms (.NET Framework 4.8.1)
+│       ├── AppPeliculas/                # UI (formularios, menú)
+│       ├── Dominio/                     # entidades (Pago, MetodoPago, …)
+│       ├── Negocio/                     # reglas y orquestación (*Negocio.cs)
+│       └── AccesoDatos/                 # SqlConnection, consultas y SP
 ├── README.md
 └── sql/
     └── desarrollo_db/
@@ -84,6 +90,74 @@ GO
 SET DATEFORMAT ymd;
 GO
 ```
+
+**Importante:** si se vuelve a ejecutar `insercion_datos.sql` sobre una base ya cargada, fallará por restricciones UNIQUE. Para recargar datos de prueba, recrear la base o limpiar tablas en orden inverso a las FK.
+
+---
+
+## Aplicación cliente WinForms (`appPeliculas`)
+
+Cliente de escritorio en **C# / .NET Framework 4.8.1** con arquitectura en capas. Referencia de implementación: módulo **Pagos** (BD2-60, Marcelo).
+
+### Requisitos previos
+
+1. **SQL Server** en Docker (ver sección anterior) o SQL Server Express local.
+2. Ejecutar los **6 scripts** de `sql/desarrollo_db/` en el orden indicado arriba. La grilla de Pagos depende de `views.sql` (`vw_PagosAprobados`) y las acciones de `sp_RegistrarPago` / `sp_CancelarReserva` en `procedimientos_almacenados.sql`.
+3. **Visual Studio 2022** con carga de trabajo *Desarrollo de escritorio de .NET*.
+
+### Abrir y ejecutar
+
+1. Abrir [`appPeliculas/BD2-TPI-G19/BD2-TPI-G19.sln`](appPeliculas/BD2-TPI-G19/BD2-TPI-G19.sln).
+2. Restaurar paquetes NuGet (clic derecho en la solución → *Restaurar paquetes NuGet*). Se usa `Microsoft.Data.SqlClient` con el paquete **SNI** (requerido en tiempo de ejecución).
+3. Establecer **AppPeliculas** como proyecto de inicio.
+4. **F5** → menú *Pagos* abre `frmPagos`.
+
+### Arquitectura
+
+```
+frmPrincipal / frmPagos  →  PagoNegocio  →  AccesoDatos  →  SQL Server (BD2_TPI_G19)
+         ↑                        ↑
+      Dominio                 vistas / SP / tablas
+```
+
+| Capa | Proyecto | Responsabilidad |
+|------|----------|-----------------|
+| UI | `AppPeliculas` | Formularios, validación de entrada, `DataGridView`, combos |
+| Negocio | `Negocio` | Clases `*Negocio.cs`: listados, llamadas a SP, reglas simples |
+| Datos | `AccesoDatos` | `AccesoDatos.cs`: conexión, `setearConsulta`, `setearProcedimiento` |
+| Modelo | `Dominio` | Entidades POCO (`Pago`, `MetodoPago`, …) |
+
+### Conexión a la base
+
+Cadena de conexión en [`AccesoDatos/AccesoDatos.cs`](appPeliculas/BD2-TPI-G19/AccesoDatos/AccesoDatos.cs) (desarrollo local):
+
+```
+Server=localhost,1433;Database=BD2_TPI_G19;User Id=sa;Password=BaseDatos#2;TrustServerCertificate=True;
+```
+
+Ajustar servidor/usuario si el entorno difiere del Docker de ejemplo.
+
+### Patrón MVP por módulo (equipo)
+
+Cada integrante implementa **un formulario** siguiendo el mismo esquema que Pagos:
+
+| Elemento | Qué hacer |
+|----------|-----------|
+| Grilla | `SELECT` sobre **vista** del módulo (`DataSource` desde `*Negocio.Listar…()`) |
+| Acción principal | Un **stored procedure** vía `setearProcedimiento` + parámetros |
+| Menú | Registrar el form en `frmPrincipal.cs` (`ShowDialog`) |
+| Capas | Entidad en `Dominio`, lógica en `Negocio`, SQL en `AccesoDatos` |
+
+### Estado de módulos WinForms
+
+| Módulo | Responsable | Vista (grilla) | SP (acción) | Estado |
+|--------|-------------|----------------|-------------|--------|
+| Pagos | Marcelo | `vw_PagosAprobados` | `sp_RegistrarPago`, `sp_CancelarReserva` | Implementado |
+| Películas | Gastón | `vw_CarteleraPeliculas` | `sp_InsertarPelicula` | Pendiente |
+| Funciones | Gisela | `vw_FuncionesCompleto` | `sp_CrearFuncion` | Pendiente |
+| Reservas | Henry | `vw_DetalleReservasCompleto` | `sp_CrearReservaConDetalle` | Pendiente (vista en PR BD2-27) |
+
+Rama de referencia para nuevos formularios: `feature/BD2-60-winforms-mvp` (ya mergeada en `main`).
 
 ---
 

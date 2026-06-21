@@ -17,12 +17,18 @@ namespace AppPeliculas
 
         private void peliculasToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MostrarProximamente("Películas (Gastón)");
+            using (var formulario = new frmPeliculas())
+            {
+                formulario.ShowDialog(this);
+            }
         }
 
         private void funcionesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MostrarProximamente("Funciones (Gisela)");
+            using (var formulario = new frmFunciones())
+            {
+                formulario.ShowDialog(this);
+            }
         }
 
         private void reservasToolStripMenuItem_Click(object sender, EventArgs e)
