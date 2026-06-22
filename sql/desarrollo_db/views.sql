@@ -83,7 +83,6 @@ LEFT JOIN FUNCIONES f ON s.id_sala = f.id_sala
 WHERE f.id_funcion IS NULL;
 GO
 
-
 -- Henry    (BD2-25, BD2-27 integradoras)
 
 -- Consulta 1: Usuarios sin reservas
@@ -275,6 +274,7 @@ GO
 
 -- Henry    (BD2-25)  CREATE VIEW vw_DetalleReservasCompleto ...
 -- BD2-25: Vista 1: vw_DetalleReservasCompleto
+-- Muestra un mapeo detallado de las reservas para facilitar la gestión
 
 CREATE VIEW vw_DetalleReservasCompleto AS
 SELECT
