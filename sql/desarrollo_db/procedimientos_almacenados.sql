@@ -12,9 +12,7 @@ CREATE PROCEDURE sp_InsertarPelicula
     @Duracion SMALLINT
 AS
 BEGIN
-
-
-    --VALIDAMOS SI LA DURACION ES MAYOR A 0
+    -- VALIDAMOS SI LA DURACION ES MAYOR A 0
     IF @Duracion <= 0
     BEGIN
         RAISERROR('La duración de la película debe ser mayor a 0 minutos.', 16, 1);
@@ -28,7 +26,7 @@ BEGIN
         RETURN;
     END
 
-    --VALIDAMOS LA EXISTENCIA DEL GENERO
+    -- VALIDAMOS LA EXISTENCIA DEL GENERO
     IF NOT EXISTS (SELECT 1 FROM GENEROS WHERE id_genero = @ID_Genero)
     BEGIN
         RAISERROR('El género especificado no existe.', 16, 1);
@@ -38,7 +36,7 @@ BEGIN
     BEGIN TRY
 
         BEGIN TRANSACTION;
-        --iNSERTAMOS LOS DATOS RECIBIDOS EN LA TABLA PELICULAS
+        -- INSERTAMOS LOS DATOS RECIBIDOS EN LA TABLA PELICULAS
         INSERT INTO PELICULAS (id_clasificacion, id_genero, titulo,sinopsis, duracion_minutos)
         VALUES (@ID_Clasificaciones , @ID_Genero , @Titulo, @Sinopsis, @Duracion);
 
@@ -47,7 +45,7 @@ BEGIN
         PRINT 'Película insertada con éxito.';
     END TRY
     BEGIN CATCH
-        --SI FALLA SE DESHACE TODO
+        -- SI FALLA SE DESHACE TODO
         IF @@TRANCOUNT > 0
             ROLLBACK TRANSACTION;
 
@@ -57,7 +55,6 @@ BEGIN
     END CATCH
 END;
 GO
-
 
 -- Gisela   (BD2-30)  sp_CrearFuncion
 CREATE PROCEDURE sp_CrearFuncion
@@ -80,7 +77,7 @@ BEGIN
         RAISERROR('Error: La sala especificada no existe en el sistema.', 16, 1);
         RETURN;
     END;
-    --Verificar que el precio base sea valido
+    -- Verificar que el precio base sea valido
     IF @precio_base <= 0
     BEGIN
         RAISERROR('Error: El precio base de la función debe ser mayor a cero.', 16, 1);
@@ -108,7 +105,7 @@ BEGIN
         RAISERROR('Error: La sala ya se encuentra ocupada por otra función en ese rango horario.', 16, 1);
         RETURN;
     END;
-    --Si paso todos los controles, se registra la funcion
+    -- Si paso todos los controles, se registra la funcion
     INSERT INTO FUNCIONES (id_pelicula, id_sala, fecha_hora, precio_base)
     VALUES (@id_pelicula, @id_sala, @fecha_hora, @precio_base);
 
@@ -180,7 +177,7 @@ BEGIN
         RAISERROR('La función especificada no existe en el sistema.', 16, 1);
         RETURN;
     END;
-    -- Si no existe una reserva para ese usuario, se lo notificamos
+    -- Si no existe una reserva para esa función, se lo notificamos
     IF NOT EXISTS (SELECT 1 FROM RESERVAS WHERE id_funcion = @id_funcion)
     BEGIN
         RAISERROR('La función aún no tiene reservas realizadas.', 16, 1);
@@ -213,10 +210,111 @@ END;
 GO
 
 -- Pruebas BD2-31
---  EXEC sp_ButacasOcupadasPorFuncion @id_funcion = 1;
+-- EXEC sp_ButacasOcupadasPorFuncion @id_funcion = 1;
 -- GO
 
 -- Henry    (BD2-35)  sp_CrearReservaConDetalle  (BEGIN TRAN)
+CREATE PROCEDURE sp_CrearReservaConDetalle
+    @id_usuario BIGINT,
+    @id_funcion BIGINT,
+    @id_butaca BIGINT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    --- VALIDACIONES DEL ID DE USUARIO
+    -- Validamos que el id del usuario es válido
+    IF @id_usuario < 1
+    BEGIN
+        RAISERROR('El id de usuario no es válido, recuerde que el id tiene que ser un número positivo mayor a 0.', 16, 1);
+        RETURN;
+    END
+    -- Consultamos si existe ese usuario en el sistema
+    IF NOT EXISTS (SELECT 1 FROM USUARIOS WHERE id_usuario = @id_usuario)
+    BEGIN
+        RAISERROR('El usuario especificado no existe en el sistema.', 16, 1);
+        RETURN;
+    END;
+    --- VALIDACIONES DEL ID DE FUNCIÓN
+    -- Validamos que el id de la función sea válido
+    IF @id_funcion < 1
+    BEGIN
+        RAISERROR('El id de función no es válido, recuerde que el id tiene que ser un número positivo mayor a 0.', 16, 1);
+        RETURN;
+    END
+    -- Consultamos si existe esa función en el sistema
+    IF NOT EXISTS (SELECT 1 FROM FUNCIONES WHERE id_funcion = @id_funcion)
+    BEGIN
+        RAISERROR('La función especificada no existe en el sistema.', 16, 1);
+        RETURN;
+    END;
+    --- VALIDACIONES DEL ID DE BUTACA
+    -- Validamos que el id de la butaca sea válido
+    IF @id_butaca < 1
+    BEGIN
+        RAISERROR('El id de butaca no es válido, recuerde que el id tiene que ser un número positivo mayor a 0.', 16, 1);
+        RETURN;
+    END
+    -- Consultamos si existe esa butaca en el sistema
+    IF NOT EXISTS (SELECT 1 FROM BUTACAS WHERE id_butaca = @id_butaca)
+    BEGIN
+        RAISERROR('La butaca especificada no existe en el sistema.', 16, 1);
+        RETURN;
+    END;
+    -- Si se pasan todas las validaciones, entonces empezamos el proceso para guardar la reserva
+    BEGIN TRY
+        BEGIN TRANSACTION;
+        -- Buscamos si es la primera vez que el usuario hace una reserva para esa función
+        IF NOT EXISTS(
+            SELECT 
+                1
+            FROM RESERVAS
+            WHERE id_usuario = @id_usuario AND id_funcion = @id_funcion
+        )
+        BEGIN
+            -- Insertamos los datos recibidos en la tabla RESERVAS
+            INSERT INTO RESERVAS (id_usuario, id_funcion, total_pagado)
+            VALUES (@id_usuario, @id_funcion, NULL);
+        END;
+        -- Hacemos lo siguiente tanto para agregar una butaca a una reserva ya hecha por el usuario o para una nueva reserva
+        -- Obtenemos el id de la reserva
+        DECLARE @id_reserva BIGINT;
+        SELECT TOP 1
+            @id_reserva = id_reserva 
+        FROM RESERVAS 
+        WHERE id_usuario = @id_usuario 
+        AND id_funcion = @id_funcion
+        AND estado <> 'Cancelada'
+        ORDER BY id_reserva DESC;
+        
+        -- Obtenemos el precio unitario de la butaca
+        DECLARE @precio_unitario MONEY;
+        SELECT
+            @precio_unitario = precio_base
+        FROM FUNCIONES
+        WHERE id_funcion = @id_funcion
+        
+        INSERT INTO DETALLES_RESERVAS (id_reserva, id_butaca, precio_unitario)
+        VALUES (@id_reserva, @id_butaca, @precio_unitario)
+
+        -- Si todo se realizó correctamente, confirmamos los cambios
+        PRINT 'La reserva se registró exitosamente.';
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        -- Si un proceso falla durante la ejecución, se deshace todo
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR(@ErrorMessage, 16, 1);
+        RETURN;
+    END CATCH
+END;
+GO
+
+-- Pruebas BD2-35
+-- EXEC sp_CrearReservaConDetalle @id_usuario = 3, @id_funcion = 5, @id_butaca = 1
+-- GO
 
 -- Marcelo  (BD2-32, BD2-36)
 CREATE PROCEDURE sp_RegistrarPago
@@ -265,6 +363,8 @@ BEGIN
         UPDATE RESERVAS
         SET estado = 'Pagada', total_pagado = @total_pagado
         WHERE id_reserva = @id_reserva;
+        
+        PRINT 'El pago se registró exitosamente.';
 
         COMMIT TRANSACTION;
     END TRY
@@ -295,8 +395,11 @@ BEGIN
     UPDATE PAGOS
     SET estado_pago = 'Devuelto'
     WHERE id_reserva = @id_reserva AND estado_pago = 'Aprobado';
+    
+    PRINT 'Se canceló la reserva exitosamente.';
 END;
 GO
+
 -- Pruebas BD2-32 / BD2-36
---  EXEC sp_RegistrarPago @id_reserva = 3, @id_metodo_pago = 1, @total_pagado = 2800.00;
+-- EXEC sp_RegistrarPago @id_reserva = 3, @id_metodo_pago = 1, @total_pagado = 2800.00;
 -- GO
