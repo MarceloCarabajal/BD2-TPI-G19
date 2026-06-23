@@ -157,10 +157,6 @@ BEGIN
 END;
 GO
 
--- Pruebas BD2-31
--- EXEC sp_ReservasPorUsuario @id_usuario = 1;
--- GO
-
 CREATE PROCEDURE sp_ButacasOcupadasPorFuncion
     @id_funcion BIGINT
 AS
@@ -208,10 +204,6 @@ BEGIN
         ORDER BY f.id_funcion ASC, fecha_funcion DESC, b.fila ASC, numero_butaca ASC; 
 END;
 GO
-
--- Pruebas BD2-31
--- EXEC sp_ButacasOcupadasPorFuncion @id_funcion = 1;
--- GO
 
 -- Henry    (BD2-35)  sp_CrearReservaConDetalle  (BEGIN TRAN)
 CREATE PROCEDURE sp_CrearReservaConDetalle
@@ -312,10 +304,6 @@ BEGIN
 END;
 GO
 
--- Pruebas BD2-35
--- EXEC sp_CrearReservaConDetalle @id_usuario = 3, @id_funcion = 5, @id_butaca = 1
--- GO
-
 -- Marcelo  (BD2-32, BD2-36)
 CREATE PROCEDURE sp_RegistrarPago
     @id_reserva BIGINT,
@@ -400,6 +388,60 @@ BEGIN
 END;
 GO
 
--- Pruebas BD2-32 / BD2-36
+-- Pruebas BD41 (Marcelo) sp_InsertarPelicula
+-- Caso exitoso
+-- EXEC sp_InsertarPelicula @ID_Clasificaciones = 1, @ID_Genero = 1, @Titulo = 'Prueba', @Sinopsis = 'Prueba de sinopsis', @Duracion = 120;
+-- GO
+-- Caso de error (duracion negativa)
+-- EXEC sp_InsertarPelicula @ID_Clasificaciones = 1, @ID_Genero = 1, @Titulo = 'Prueba', @Sinopsis = 'Prueba de sinopsis', @Duracion = -120;
+-- GO
+
+-- Pruebas BD2-41 (Marcelo) sp_CrearFuncion
+-- Caso exitoso
+-- EXEC sp_CrearFuncion @id_pelicula = 1, @id_sala = 1, @fecha_hora = '2026-07-01 20:00:00', @precio_base = 500.00;
+-- GO
+-- Caso de error (sala ocupada en mismo horario)
+-- EXEC sp_CrearFuncion @id_pelicula = 1, @id_sala = 1, @fecha_hora = '2026-07-01 20:00:00', @precio_base = 600.00;
+-- GO
+
+-- Pruebas BD2-41 (Marcelo) sp_ReservasPorUsuario
+-- Caso exitoso
+-- EXEC sp_ReservasPorUsuario @id_usuario = 1;
+-- GO
+-- Caso de error (usuario inexistente)
+-- EXEC sp_ReservasPorUsuario @id_usuario = 999;
+-- GO
+
+-- Pruebas BD2-41 (Marcelo) sp_ButacasOcupadasPorFuncion
+-- Caso exitoso
+-- EXEC sp_ButacasOcupadasPorFuncion @id_funcion = 1;
+-- GO
+-- Caso de error (funcion inexistente)
+-- EXEC sp_ButacasOcupadasPorFuncion @id_funcion = 999;
+-- GO
+
+-- Pruebas BD2-41 (Marcelo) sp_CrearReservaConDetalle
+-- Caso exitoso
+-- EXEC sp_CrearReservaConDetalle @id_usuario = 3, @id_funcion = 5, @id_butaca = 1
+-- GO
+-- Caso de error (butaca ya ocupada en misma función)
+-- EXEC sp_CrearReservaConDetalle @id_usuario = 3, @id_funcion = 5, @id_butaca = 6
+-- GO
+
+-- Pruebas BD2-41 (Marcelo) sp_RegistrarPago
+-- Caso exitoso
 -- EXEC sp_RegistrarPago @id_reserva = 3, @id_metodo_pago = 1, @total_pagado = 2800.00;
+-- GO
+-- Caso de error (reserva cancelada o ya pagada)
+-- EXEC sp_RegistrarPago @id_reserva = 4, @id_metodo_pago = 1, @total_pagado = 2800.00;
+-- GO
+-- SELECT * from PAGOS where id_reserva = 3;
+-- GO
+
+-- Pruebas BD2-41 (Marcelo) sp_CancelarReserva
+-- Caso exitoso
+-- EXEC sp_CancelarReserva @id_reserva = 3;
+-- GO
+-- Caso de error (reserva inexistente)
+-- EXEC sp_CancelarReserva @id_reserva = 999;
 -- GO
