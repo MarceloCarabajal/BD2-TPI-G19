@@ -52,6 +52,12 @@
     <Compile Include="frmFunciones.Designer.cs">
       <DependentUpon>frmFunciones.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmReservas.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmReservas.Designer.cs">
+      <DependentUpon>frmReservas.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmPagos.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,6 +80,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="frmFunciones.resx">
       <DependentUpon>frmFunciones.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmReservas.resx">
+      <DependentUpon>frmReservas.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmPagos.resx">
       <DependentUpon>frmPagos.cs</DependentUpon>

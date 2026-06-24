@@ -33,7 +33,10 @@ namespace AppPeliculas
 
         private void reservasToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MostrarProximamente("Reservas (Henry)");
+            using (var formulario = new frmReservas())
+            {
+                formulario.ShowDialog(this);
+            }
         }
 
         private void pagosToolStripMenuItem_Click(object sender, EventArgs e)
