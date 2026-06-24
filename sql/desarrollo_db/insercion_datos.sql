@@ -4,40 +4,41 @@ SET DATEFORMAT ymd;
 GO
 
 -- Gaston
+-- Nota: literales N'...' para acentos (script UTF-8). Con sqlcmd usar: sqlcmd ... -f 65001
 
 -- INSERTS PARA LA TABLA: CLASIFICACIONES
 
 INSERT INTO CLASIFICACIONES (descripcion) VALUES
-('ATP - Apta para todo público'),
-('SAM 13 - Apta para mayores de 13 años'),
-('SAM 16 - Apta para mayores de 16 años'),
-('SAM 18 - Apta para mayores de 18 años');
+(N'ATP - Apta para todo público'),
+(N'SAM 13 - Apta para mayores de 13 años'),
+(N'SAM 16 - Apta para mayores de 16 años'),
+(N'SAM 18 - Apta para mayores de 18 años');
 GO
 -- SELECT * FROM CLASIFICACIONES;
 
 -- INSERTS PARA LA TABLA: GENEROS
 
 INSERT INTO GENEROS (descripcion) VALUES
-('Acción'),
-('Ciencia Ficción'),
+(N'Acción'),
+(N'Ciencia Ficción'),
 ('Drama'),
 ('Comedia'),
 ('Terror'),
-('Animación');
+(N'Animación');
 GO
 -- SELECT * FROM GENEROS;
 
 -- INSERTS PARA LA TABLA: PELICULAS
 
 INSERT INTO PELICULAS (id_clasificacion, id_genero, titulo, sinopsis, duracion_minutos) VALUES
-(1, 6, 'Toy Story', 'Un grupo de juguetes vivientes se meten en problemas cuando llega un nuevo juguete espacial.', 81),
-(3, 2, 'Matrix', 'Un programador de computación descubre que el mundo en el que vive es una simulación virtual.', 136),
-(2, 1, 'The Avengers', 'Los héroes más poderosos de la Tierra se unen para defender el planeta de una amenaza alienígena.', 143),
-(4, 5, 'El Conjuro', 'Investigadores paranormales acuden a ayudar a una familia que experimenta sucesos extraños en su granja.', 112),
-(1, 4, 'Shrek', 'Un ogro gruñón emprende un viaje junto a un burro parlanchín para rescatar a una princesa.', 90),
-(2, 3, 'Interestelar', 'Un grupo de científicos viaja a través de un agujero de gusano en el espacio para encontrar un nuevo hogar para la humanidad.', 169),
-(2, 2, 'Jurassic Park', 'Un multimillonario recrea dinosaurios mediante ingeniería genética para un parque de atracciones, pero algo sale terriblemente mal.', 127),
-(1, 3, 'Rocky', 'Un boxeador de un barrio humilde recibe la oportunidad de su vida para pelear por el título mundial de peso completo.', 119);
+(1, 6, 'Toy Story', N'Un grupo de juguetes vivientes se meten en problemas cuando llega un nuevo juguete espacial.', 81),
+(3, 2, 'Matrix', N'Un programador de computación descubre que el mundo en el que vive es una simulación virtual.', 136),
+(2, 1, 'The Avengers', N'Los héroes más poderosos de la Tierra se unen para defender el planeta de una amenaza alienígena.', 143),
+(4, 5, 'El Conjuro', N'Investigadores paranormales acuden a ayudar a una familia que experimenta sucesos extraños en su granja.', 112),
+(1, 4, 'Shrek', N'Un ogro gruñón emprende un viaje junto a un burro parlanchín para rescatar a una princesa.', 90),
+(2, 3, 'Interestelar', N'Un grupo de científicos viaja a través de un agujero de gusano en el espacio para encontrar un nuevo hogar para la humanidad.', 169),
+(2, 2, 'Jurassic Park', N'Un multimillonario recrea dinosaurios mediante ingeniería genética para un parque de atracciones, pero algo sale terriblemente mal.', 127),
+(1, 3, 'Rocky', N'Un boxeador de un barrio humilde recibe la oportunidad de su vida para pelear por el título mundial de peso completo.', 119);
 GO
 -- SELECT * FROM PELICULAS;
 
@@ -47,10 +48,10 @@ GO
 
 INSERT INTO COMPLEJOS (nombre, direccion, telefono) VALUES
     ('CineHoyts Abasto', 'Av. Corrientes 3247, CABA', '11-4861-2200'),
-    ('Cinépolis Recoleta', 'Vicente López 2050, CABA', '11-4808-0000'),
+    (N'Cinépolis Recoleta', N'Vicente López 2050, CABA', '11-4808-0000'),
     ('Showcase Belgrano', 'Av. Monroe 1655, CABA', '11-4789-9100'),
     ('Multiplex Belgrano', 'Vuelta de Obligado 2199, CABA', '11-4781-5500'),
-    ('Cinema Devoto', 'José Pedro Varela 4866, CABA', '11-4505-8000');
+    ('Cinema Devoto', N'José Pedro Varela 4866, CABA', '11-4505-8000');
 GO
 -- SELECT * FROM COMPLEJOS;
 
@@ -83,12 +84,12 @@ GO
 -- INSERTS PARA LA TABLA: USUARIOS
 
 INSERT INTO USUARIOS (nombre, apellido, email, password, fecha_registro) VALUES
-    ('Martina', 'Gómez', 'martina.gomez@gmail.com', 'Martina123', '2025-03-15'),
-    ('Lucas', 'Fernández', 'lucas.fernandez@hotmail.com', 'Lucas123', '2024-05-02'),
+    ('Martina', N'Gómez', 'martina.gomez@gmail.com', 'Martina123', '2025-03-15'),
+    ('Lucas', N'Fernández', 'lucas.fernandez@hotmail.com', 'Lucas123', '2024-05-02'),
     ('Valentina', 'Pereyra', 'valentina.pereyra@gmail.com', 'Valentina123', '2026-03-10'),
-    ('Santiago', 'Ramírez', 'santiago.ramirez@yahoo.com', 'Santiago123', GETDATE()),
+    ('Santiago', N'Ramírez', 'santiago.ramirez@yahoo.com', 'Santiago123', GETDATE()),
     ('Camila', 'Torres', 'camila.torres@outlook.com', 'Camila123', '2026-08-20'),
-    ('Mateo', 'Suárez', 'mateo.suarez@email.com', 'Mateo123', '2026-11-05');
+    ('Mateo', N'Suárez', 'mateo.suarez@email.com', 'Mateo123', '2026-11-05');
 GO
 -- SELECT * FROM USUARIOS;
 
@@ -112,8 +113,8 @@ GO
 
 INSERT INTO METODOS_PAGOS (nombre) VALUES
     ('Efectivo'),
-    ('Tarjeta de débito'),
-    ('Tarjeta de crédito'),
+    (N'Tarjeta de débito'),
+    (N'Tarjeta de crédito'),
     ('Mercado Pago'),
     ('Transferencia bancaria');
 GO
