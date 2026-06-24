@@ -93,6 +93,8 @@ GO
 
 **Importante:** si se vuelve a ejecutar `insercion_datos.sql` sobre una base ya cargada, fallará por restricciones UNIQUE. Para recargar datos de prueba, recrear la base o limpiar tablas en orden inverso a las FK.
 
+**Acentos en datos de prueba:** el script está en UTF-8. Los literales con tildes usan prefijo `N'...'`. Desde consola, ejecutar con `sqlcmd -f 65001`. Si los acentos se ven mal en WinForms/SSMS, recrear la BD con el script actualizado.
+
 ---
 
 ## Aplicación cliente WinForms (`appPeliculas`)
@@ -110,14 +112,16 @@ Cliente de escritorio en **C# / .NET Framework 4.8.1** con arquitectura en capas
 1. Abrir [`appPeliculas/BD2-TPI-G19/BD2-TPI-G19.sln`](appPeliculas/BD2-TPI-G19/BD2-TPI-G19.sln).
 2. Restaurar paquetes NuGet (clic derecho en la solución → *Restaurar paquetes NuGet*). Se usa `Microsoft.Data.SqlClient` con el paquete **SNI** (requerido en tiempo de ejecución).
 3. Establecer **AppPeliculas** como proyecto de inicio.
-4. **F5** → menú *Pagos* abre `frmPagos`.
+4. **F5** → menú principal con acceso a **Películas**, **Funciones**, **Reservas** y **Pagos**.
 
 ### Arquitectura
 
 ```
-frmPrincipal / frmPagos  →  PagoNegocio  →  AccesoDatos  →  SQL Server (BD2_TPI_G19)
-         ↑                        ↑
-      Dominio                 vistas / SP / tablas
+frmPrincipal  →  frmPagos / frmPeliculas / frmFunciones / frmReservas
+                      ↓
+                 *Negocio.cs  →  AccesoDatos  →  SQL Server (BD2_TPI_G19)
+                      ↓
+                   Dominio          vistas / SP / tablas
 ```
 
 | Capa | Proyecto | Responsabilidad |
@@ -150,14 +154,21 @@ Cada integrante implementa **un formulario** siguiendo el mismo esquema que Pago
 
 ### Estado de módulos WinForms
 
-| Módulo | Responsable | Vista (grilla) | SP (acción) | Estado |
-|--------|-------------|----------------|-------------|--------|
-| Pagos | Marcelo | `vw_PagosAprobados` | `sp_RegistrarPago`, `sp_CancelarReserva` | Implementado |
-| Películas | Gastón | `vw_CarteleraPeliculas` | `sp_InsertarPelicula` | Pendiente |
-| Funciones | Gisela | `vw_FuncionesCompleto` | `sp_CrearFuncion` | Pendiente |
-| Reservas | Henry | `vw_DetalleReservasCompleto` | `sp_CrearReservaConDetalle` | Pendiente (vista en PR BD2-27) |
+| Módulo | Vista (grilla) | SP (acción) | Estado |
+|--------|----------------|-------------|--------|
+| Pagos | `vw_PagosAprobados` | `sp_RegistrarPago`, `sp_CancelarReserva` | Implementado |
+| Películas | `vw_CarteleraPeliculas` | `sp_InsertarPelicula` | Implementado |
+| Funciones | `vw_FuncionesCompleto` | `sp_CrearFuncion` | Implementado |
+| Reservas | `vw_DetalleReservasCompleto` | `sp_CrearReservaConDetalle` | Implementado |
 
-Rama de referencia para nuevos formularios: `feature/BD2-60-winforms-mvp` (ya mergeada en `main`).
+**WinForms:** Marcelo Carabajal (módulos Pagos, Películas, Funciones y Reservas).  
+**SQL (vistas/SP por dominio):** Gastón (películas), Gisela (funciones/salas), Henry (reservas/usuarios), Marcelo (pagos).
+
+Ramas de referencia: `feature/BD2-60-winforms-mvp` (Pagos), `feature/BD2-60-winforms-reservas` (Reservas).
+
+### Pruebas de integración (SQL)
+
+Al final de [`procedimientos_almacenados.sql`](sql/desarrollo_db/procedimientos_almacenados.sql) y [`triggers.sql`](sql/desarrollo_db/triggers.sql) hay bloques comentados con casos de prueba (BD2-41 / BD2-42). Ejecutarlos **en orden** sobre una **BD limpia** (scripts 1→6). Ver también [`sql/docs/PRUEBA_ROLLBACK.sql`](sql/docs/PRUEBA_ROLLBACK.sql).
 
 ---
 
@@ -171,7 +182,8 @@ Rama de referencia para nuevos formularios: `feature/BD2-60-winforms-mvp` (ya me
 | Reserva | `estado` ∈ Pendiente \| Pagada \| Cancelada |
 | Un pago por reserva | `UQ_PAGOS_RESERVA` en `PAGOS` |
 | Estado de pago | `estado_pago` ∈ Pendiente \| Aprobado \| Rechazado \| Devuelto |
-| No repetir butaca por función | `UQ_DETALLES_RESERVAS_FuncionButaca` sobre (`id_funcion`, `id_butaca`) |
+| No repetir butaca por reserva | `UQ_DETALLES_RESERVAS_ReservaButaca` en `DETALLES_RESERVAS` |
+| No repetir butaca en misma función | Trigger `TR_DetallesReservas_EvitarButacaDuplicada` (BD2-62) |
 
 ---
 
