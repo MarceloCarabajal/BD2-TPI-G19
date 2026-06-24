@@ -151,6 +151,7 @@
   <ItemGroup>
     <Compile Include="FuncionNegocio.cs" />
     <Compile Include="PagoNegocio.cs" />
+    <Compile Include="ReservaNegocio.cs" />
     <Compile Include="PeliculaNegocio.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
