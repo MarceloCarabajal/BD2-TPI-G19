@@ -93,7 +93,7 @@ GO
 
 **Importante:** si se vuelve a ejecutar `insercion_datos.sql` sobre una base ya cargada, fallará por restricciones UNIQUE. Para recargar datos de prueba, recrear la base o limpiar tablas en orden inverso a las FK.
 
-**Acentos en datos de prueba:** el script está en UTF-8. Los literales con tildes usan prefijo `N'...'`. Desde consola, ejecutar con `sqlcmd -f 65001`. Si los acentos se ven mal en WinForms/SSMS, recrear la BD con el script actualizado.
+**Acentos y texto en español:** las columnas de texto legible (`nombre`, `titulo`, `descripcion`, `sinopsis`, etc.) usan **`NVARCHAR`** en el DDL. Los scripts están en **UTF-8**. Desde consola: `sqlcmd ... -f 65001`. En SSMS, abrir/guardar el archivo con codificación UTF-8. Si los acentos se ven mal, **recrear la BD** ejecutando los 6 scripts en orden (no basta con volver a correr solo `insercion_datos.sql` sobre tablas `VARCHAR` antiguas).
 
 ---
 
@@ -191,6 +191,8 @@ Al final de [`procedimientos_almacenados.sql`](sql/desarrollo_db/procedimientos_
 
 - **Nombre de la BD:** `BD2_TPI_G19`
 - **Collation:** `Latin1_General_CI_AI` (consistente con scripts de práctica del curso)
+- **Texto legible:** `NVARCHAR` en nombres, títulos, descripciones, direcciones y apellidos
+- **Códigos / enums:** `VARCHAR` en `estado`, `estado_pago`, `tipo_sala`, `email`, `password`, `telefono`, `fila`
 - **Claves surrogate:** `IDENTITY(1,1)` en PK
 
 ---

@@ -7,8 +7,8 @@ GO
 CREATE PROCEDURE sp_InsertarPelicula
     @ID_Clasificaciones BIGINT,
     @ID_Genero BIGINT,
-    @Titulo VARCHAR(150),
-    @Sinopsis VARCHAR (1000),
+    @Titulo NVARCHAR(150),
+    @Sinopsis NVARCHAR(1000),
     @Duracion SMALLINT
 AS
 BEGIN

@@ -24,7 +24,7 @@ GO
 CREATE TABLE CLASIFICACIONES
 (
     id_clasificacion BIGINT NOT NULL IDENTITY(1, 1),
-    descripcion VARCHAR(50) NOT NULL,
+    descripcion NVARCHAR(50) NOT NULL,
     CONSTRAINT PK_CLASIFICACIONES PRIMARY KEY (id_clasificacion)
 );
 GO
@@ -32,7 +32,7 @@ GO
 CREATE TABLE GENEROS
 (
     id_genero BIGINT NOT NULL IDENTITY(1, 1),
-    descripcion VARCHAR(50) NOT NULL,
+    descripcion NVARCHAR(50) NOT NULL,
     CONSTRAINT PK_GENEROS PRIMARY KEY (id_genero)
 );
 GO
@@ -42,8 +42,8 @@ CREATE TABLE PELICULAS
     id_pelicula BIGINT NOT NULL IDENTITY(1, 1),
     id_clasificacion BIGINT NOT NULL,
     id_genero BIGINT NOT NULL,
-    titulo VARCHAR(150) NOT NULL,
-    sinopsis VARCHAR(1000) NULL,
+    titulo NVARCHAR(150) NOT NULL,
+    sinopsis NVARCHAR(1000) NULL,
     duracion_minutos SMALLINT NULL,
     CONSTRAINT PK_PELICULAS PRIMARY KEY (id_pelicula),
     CONSTRAINT FK_PELICULAS_CLASIFICACION
@@ -58,8 +58,8 @@ GO
 CREATE TABLE COMPLEJOS
 (
     id_complejo BIGINT NOT NULL IDENTITY(1, 1),
-    nombre VARCHAR(100) NOT NULL,
-    direccion VARCHAR(255) NOT NULL,
+    nombre NVARCHAR(100) NOT NULL,
+    direccion NVARCHAR(255) NOT NULL,
     telefono VARCHAR(50) NULL,
     CONSTRAINT PK_COMPLEJOS PRIMARY KEY (id_complejo)
 );
@@ -69,7 +69,7 @@ CREATE TABLE SALAS
 (
     id_sala BIGINT NOT NULL IDENTITY(1, 1),
     id_complejo BIGINT NOT NULL,
-    nombre_sala VARCHAR(50) NOT NULL,
+    nombre_sala NVARCHAR(50) NOT NULL,
     capacidad_total SMALLINT NOT NULL,
     tipo_sala VARCHAR(10) NOT NULL,
     CONSTRAINT PK_SALAS PRIMARY KEY (id_sala),
@@ -102,8 +102,8 @@ GO
 CREATE TABLE USUARIOS
 (
     id_usuario BIGINT NOT NULL IDENTITY(1, 1),
-    nombre VARCHAR(100) NOT NULL,
-    apellido VARCHAR(100) NOT NULL,
+    nombre NVARCHAR(100) NOT NULL,
+    apellido NVARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     password VARCHAR(100) NOT NULL,
     fecha_registro DATETIME NOT NULL DEFAULT GETDATE(),
@@ -130,7 +130,7 @@ GO
 CREATE TABLE METODOS_PAGOS
 (
     id_metodo_pago BIGINT NOT NULL IDENTITY(1, 1),
-    nombre VARCHAR(50) NOT NULL,
+    nombre NVARCHAR(50) NOT NULL,
     CONSTRAINT PK_METODOS_PAGOS PRIMARY KEY (id_metodo_pago),
     CONSTRAINT UQ_METODOS_PAGOS_Nombre UNIQUE (nombre)
 );
