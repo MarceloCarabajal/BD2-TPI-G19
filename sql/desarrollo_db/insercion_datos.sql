@@ -156,3 +156,150 @@ GO
 
 PRINT 'Todos los registros de la Base de datos BD2_TPI_G19 fueron insertados correctamente.';
 GO
+
+-- ============================================================
+-- PRUEBAS (épica BD2-14, tarea BD2-39) (Henry)
+-- ============================================================
+-- Tabla CLASIFICACIONES
+-- Caso exitoso
+-- INSERT INTO CLASIFICACIONES (descripcion)
+-- VALUES ('Apta mayores de 13 años');
+-- GO
+-- -- Caso de error (descripcion NULL)
+-- INSERT INTO CLASIFICACIONES (descripcion)
+-- VALUES (NULL);
+-- GO
+-- SELECT * FROM CLASIFICACIONES;
+-- GO
+-- 
+-- -- Tabla GENEROS
+-- -- Caso exitoso
+-- INSERT INTO GENEROS (descripcion)
+-- VALUES ('Suspenso');
+-- GO
+-- -- Caso de error (descripcion NULL)
+-- INSERT INTO GENEROS (descripcion)
+-- VALUES (NULL);
+-- GO
+-- SELECT * FROM GENEROS;
+-- GO
+-- 
+-- -- Tabla PELICULAS
+-- -- Caso exitoso
+-- INSERT INTO PELICULAS (id_clasificacion, id_genero, titulo, sinopsis, duracion_minutos)
+-- VALUES (1, 1, 'Viaje al Horizonte', 'Un grupo de exploradores viaja más allá del sistema solar.', 125);
+-- GO
+-- -- Caso de error (FK id_clasificacion inexistente)
+-- INSERT INTO PELICULAS (id_clasificacion, id_genero, titulo, sinopsis, duracion_minutos)
+-- VALUES (999, 1, 'Película inválida', 'No debería insertarse.', 100);
+-- GO
+-- SELECT * FROM PELICULAS;
+-- GO
+-- 
+-- -- Tabla COMPLEJOS
+-- -- Caso exitoso
+-- INSERT INTO COMPLEJOS (nombre, direccion, telefono)
+-- VALUES ('Cine Atlas Palermo', 'Av. Santa Fe 3250, CABA', '1134567890');
+-- GO
+-- -- Caso de error (nombre NULL)
+-- INSERT INTO COMPLEJOS (nombre, direccion, telefono)
+-- VALUES (NULL, 'Av. Corrientes 1500, CABA', '1144445555');
+-- GO
+-- SELECT * FROM COMPLEJOS;
+-- GO
+-- 
+-- -- Tabla SALAS
+-- -- Caso exitoso
+-- INSERT INTO SALAS (id_complejo, nombre_sala, capacidad_total, tipo_sala)
+-- VALUES (1, 'Sala Lumiere', 120, '2D');
+-- GO
+-- -- Caso de error (tipo_sala inválido)
+-- INSERT INTO SALAS (id_complejo, nombre_sala, capacidad_total, tipo_sala)
+-- VALUES (1, 'Sala Error', 100, '4D');
+-- GO
+-- SELECT * FROM SALAS;
+-- GO
+-- 
+-- -- Tabla FUNCIONES
+-- -- Caso exitoso
+-- INSERT INTO FUNCIONES (id_pelicula, id_sala, fecha_hora, precio_base)
+-- VALUES (1, 1, DATEADD(DAY, 10, GETDATE()), 6500.00);
+-- GO
+-- -- Caso de error (fecha_hora anterior a GETDATE())
+-- INSERT INTO FUNCIONES (id_pelicula, id_sala, fecha_hora, precio_base)
+-- VALUES (1, 1, DATEADD(DAY, -1, GETDATE()), 6500.00);
+-- GO
+-- SELECT * FROM FUNCIONES;
+-- GO
+-- 
+-- -- Tabla USUARIOS
+-- -- Caso exitoso
+-- INSERT INTO USUARIOS (nombre, apellido, email, password, fecha_registro)
+-- VALUES('Agustín', 'Navarro', 'agustin.navarro@protonmail.com', 'Agustin2026', GETDATE());
+-- GO
+-- -- Caso de error (email duplicado)
+-- INSERT INTO USUARIOS (nombre, apellido, email, password, fecha_registro)
+-- VALUES ('Julieta', 'Méndez', 'valentina.pereyra@gmail.com', 'Julieta2026', GETDATE());
+-- GO
+-- SELECT * FROM USUARIOS;
+-- GO
+-- 
+-- -- Tabla BUTACAS
+-- -- Caso exitoso
+-- INSERT INTO BUTACAS (id_sala, fila, numero)
+-- VALUES (1, 'E', 1);
+-- GO
+-- -- Caso de error (numero menor a 1)
+-- INSERT INTO BUTACAS (id_sala, fila, numero)
+-- VALUES (1, 'A', 0);
+-- GO
+-- SELECT * FROM BUTACAS;
+-- GO
+-- 
+-- -- Tabla METODOS_PAGOS
+-- -- Caso exitoso
+-- INSERT INTO METODOS_PAGOS (nombre)
+-- VALUES ('Criptomoneda');
+-- GO
+-- -- Caso de error (nombre duplicado)
+-- INSERT INTO METODOS_PAGOS (nombre)
+-- VALUES ('Tarjeta de crédito');
+-- GO
+-- SELECT * FROM METODOS_PAGOS;
+-- GO
+-- 
+-- -- Tabla RESERVAS
+-- -- Caso exitoso
+-- INSERT INTO RESERVAS (id_usuario, id_funcion, fecha_reserva, total_pagado, estado)
+-- VALUES (1, 1, GETDATE(), NULL, 'Pendiente');
+-- GO
+-- -- Caso de error (estado inválido)
+-- INSERT INTO RESERVAS (id_usuario, id_funcion, fecha_reserva, total_pagado, estado)
+-- VALUES (1, 1, GETDATE(), NULL, 'En proceso');
+-- GO
+-- SELECT * FROM RESERVAS;
+-- GO
+-- 
+-- -- Tabla PAGOS
+-- -- Caso exitoso
+-- INSERT INTO PAGOS (id_reserva, id_metodo_pago, fecha_pago, total_pagado, estado_pago)
+-- VALUES (3, 1, GETDATE(), 6500.00, 'Aprobado');
+-- GO
+-- -- Caso de error (total_pagado menor o igual a 0)
+-- INSERT INTO PAGOS (id_reserva, id_metodo_pago, fecha_pago, total_pagado, estado_pago)
+-- VALUES (1, 1, GETDATE(), 0.00, 'Aprobado');
+-- GO
+-- SELECT * FROM PAGOS;
+-- GO
+-- 
+-- -- Tabla DETALLES_RESERVAS
+-- -- Caso exitoso
+-- INSERT INTO DETALLES_RESERVAS (id_reserva, id_butaca, precio_unitario)
+-- VALUES (1, 6, 6500.00);
+-- GO
+-- -- Caso de error (detalle duplicado para la misma reserva y butaca)
+-- INSERT INTO DETALLES_RESERVAS (id_reserva, id_butaca, precio_unitario)
+-- VALUES (1, 1, 6500.00);
+-- GO
+-- SELECT * FROM DETALLES_RESERVAS;
+-- GO
