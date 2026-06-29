@@ -34,7 +34,7 @@ GO
 
 -- Gisela   (BD2-62)  TR_DetallesReservas_EvitarButacaDuplicada
 -- Proposito: Impide que dos reservas distintas asignen la misma
---butaca para la misma funcion durante un INSERT.
+-- butaca para la misma funcion durante un INSERT.
 
 CREATE TRIGGER TR_DetallesReservas_EvitarButacaDuplicada
 ON DETALLES_RESERVAS
@@ -107,46 +107,106 @@ BEGIN
 END;
 GO
 
--- Pruebas BD2-42 (Marcelo) — ejecutar en orden tras scripts 1-6 sobre BD limpia
+-- ============================================================
+-- PRUEBAS (épica BD2-14)
+-- ============================================================
+-- BD2-42 (Marcelo) — Ejecutar en orden tras scripts 1-6 sobre BD limpia
 -- Precondición (insercion_datos.sql): reserva 3 Pendiente sin fila en PAGOS
 
--- Verificación estado inicial
--- SELECT id_reserva, id_funcion, estado, total_pagado FROM RESERVAS ORDER BY id_reserva;
+-- Verificación estado inicial recomendado
+-- -- Tabla FUNCIONES
+-- SELECT id_funcion, id_pelicula, id_sala, precio_base FROM FUNCIONES ORDER BY id_funcion ASC;
 -- GO
--- SELECT id_reserva, estado_pago FROM PAGOS ORDER BY id_reserva;
+-- -- Tabla RESERVAS
+--  SELECT id_reserva, id_usuario, id_funcion, estado, total_pagado FROM RESERVAS ORDER BY id_reserva ASC;
+--  GO
+-- -- Tabla DETALLES_RESERVAS
+--  SELECT id_detalle, id_reserva, id_butaca, precio_unitario FROM DETALLES_RESERVAS ORDER BY id_detalle ASC;
+--  GO
+-- -- Tabla PAGOS
+--  SELECT id_pago, id_reserva, estado_pago, total_pagado, fecha_pago FROM PAGOS ORDER BY id_pago ASC;
+--  GO
+
+-- ------------------------------------------------------------
+-- TR_Funciones_BloquearCambioHorarioConReservas
+-- ------------------------------------------------------------
+-- -- BD2-33 (Gisela) - Trigger
+-- -- Caso exitoso: función 4 no tiene reservas activas, por lo tanto permite modificar fecha_hora
+-- UPDATE FUNCIONES 
+-- SET fecha_hora = DATEADD(hour, 1, fecha_hora) WHERE id_funcion = 4;
+-- GO
+-- -- Caso de error: función 1 tiene reservas activas (1 y 2), por lo tanto el trigger bloquea el UPDATE y hace ROLLBACK
+-- UPDATE FUNCIONES 
+-- SET fecha_hora = DATEADD(hour, 1, fecha_hora) WHERE id_funcion = 1;
+-- GO
+-- -- BD2-43 (Henry) - Transacciones / Rollback
+-- -- Verificación del estado de la tabla FUNCIONES y RESERVAS
+-- SELECT id_funcion, fecha_hora, id_pelicula, id_sala, precio_base FROM FUNCIONES ORDER BY id_funcion ASC;
+-- GO
+-- SELECT id_reserva, id_usuario, id_funcion, estado, total_pagado FROM RESERVAS ORDER BY id_reserva ASC;
 -- GO
 
--- TR_Funciones_BloquearCambioHorarioConReservas (Gisela BD2-33)
--- Caso exitoso: función 4 no tiene reservas
--- UPDATE FUNCIONES SET fecha_hora = DATEADD(hour, 1, fecha_hora) WHERE id_funcion = 4;
+-- ------------------------------------------------------------
+-- TR_DetallesReservas_EvitarButacaDuplicada
+-- ------------------------------------------------------------
+-- -- BD2-62 (Gisela) - Trigger
+-- -- Caso exitoso: se agrega una butaca no ocupada para la reserva 3
+-- EXEC sp_CrearReservaConDetalle @id_usuario = 3, @id_funcion = 3, @id_butaca = 1;
 -- GO
--- Caso de error: función 1 tiene reservas activas (1 y 2)
--- UPDATE FUNCIONES SET fecha_hora = DATEADD(hour, 1, fecha_hora) WHERE id_funcion = 1;
--- GO
-
--- TR_DetallesReservas_EvitarButacaDuplicada (Gisela BD2-62)
--- Caso de error: butaca 1 ya vendida en función 1; usuario 2 ya tiene reserva en función 1
+-- -- Caso de error: butaca 1 ya está reservada para la función 1 en otra reserva activa
+-- -- Reserva 1 usa butaca 1 para función 1, por eso esta inserción debe fallar y hacer ROLLBACK
 -- EXEC sp_CrearReservaConDetalle @id_usuario = 2, @id_funcion = 1, @id_butaca = 1;
 -- GO
+-- -- BD2-43 (Henry) - Transacciones / Rollback
+-- -- Verificación del estado de la tabla RESERVAS y DETALLES_RESERVAS
+-- SELECT id_reserva, id_usuario, id_funcion, estado FROM RESERVAS;
+-- GO
+-- SELECT id_detalle, id_reserva, id_butaca, precio_unitario FROM DETALLES_RESERVAS ORDER BY id_detalle ASC;
+-- GO
 
--- TR_Pagos_ActualizarEstadoReserva (Marcelo BD2-34) — INSERT
--- INSERT directo: reserva 3 pasa a Pagada
+-- ------------------------------------------------------------
+-- TR_Pagos_ActualizarEstadoReserva - INSERT
+-- ------------------------------------------------------------
+-- -- BD2-34 (Marcelo) — INSERT
+-- -- Caso exitoso: se inserta un pago aprobado para la reserva 3 y el trigger actualiza RESERVAS a Pagada
 -- INSERT INTO PAGOS (id_reserva, id_metodo_pago, total_pagado, estado_pago)
 -- VALUES (3, 1, 2800.00, 'Aprobado');
 -- GO
+-- Caso de error: estado_pago inválido, falla por CHECK y no debe insertar ni actualizar RESERVAS
+-- INSERT INTO PAGOS (id_reserva, id_metodo_pago, total_pagado, estado_pago)
+-- VALUES (3, 1, 2800.00, 'Procesando');
+-- GO
+-- -- Verificación del estado de las tablas PAGOS y RESERVAS
+-- SELECT id_pago, id_reserva, estado_pago, total_pagado FROM PAGOS WHERE id_reserva = 3;
 -- SELECT id_reserva, estado, total_pagado FROM RESERVAS WHERE id_reserva = 3;
 -- GO
 
--- TR_Pagos_AlEliminarRevertirReserva (Marcelo BD2-61)
--- DELETE del pago: reserva 3 vuelve a Pendiente (ejecutar tras INSERT anterior)
+-- ------------------------------------------------------------
+-- TR_Pagos_AlEliminarRevertirReserva
+-- ------------------------------------------------------------
+-- -- BD2-61 (Marcelo) - Trigger
+-- -- Caso exitoso: al eliminar un pago aprobado, la reserva vuelve a Pendiente (ejecutar tras INSERT anterior)
 -- DELETE FROM PAGOS WHERE id_reserva = 3;
 -- GO
+-- Caso de error: se intenta eliminar un pago inexistente, no afecta registros
+-- DELETE FROM PAGOS WHERE id_reserva = 999;
+-- GO
+-- -- Verificación del estado de las tablas PAGOS y RESERVAS
+-- SELECT id_pago, id_reserva, estado_pago, total_pagado FROM PAGOS WHERE id_reserva IN (3, 999);
 -- SELECT id_reserva, estado, total_pagado FROM RESERVAS WHERE id_reserva = 3;
 -- GO
 
--- TR_Pagos_ActualizarEstadoReserva (Marcelo BD2-34) — UPDATE
--- Devuelto en reserva 4 (pago Aprobado): reserva 4 → Cancelada
+-- ------------------------------------------------------------
+-- TR_Pagos_ActualizarEstadoReserva - UPDATE
+-- ------------------------------------------------------------
+-- -- BD2-34 (Marcelo) — UPDATE
+-- -- Caso exitoso: al cambiar un pago aprobado a Devuelto, la reserva pasa a Cancelada
 -- UPDATE PAGOS SET estado_pago = 'Devuelto' WHERE id_reserva = 4 AND estado_pago = 'Aprobado';
 -- GO
+-- Caso de error: estado_pago inválido, falla por CHECK y no debe modificar RESERVAS
+-- UPDATE PAGOS SET estado_pago = 'Procesando' WHERE id_reserva = 4;
+-- GO
+-- Verificación del estado de las tablas PAGOS y RESERVAS
+-- SELECT id_pago, id_reserva, estado_pago, total_pagado FROM PAGOS WHERE id_reserva = 4;
 -- SELECT id_reserva, estado, total_pagado FROM RESERVAS WHERE id_reserva = 4;
 -- GO

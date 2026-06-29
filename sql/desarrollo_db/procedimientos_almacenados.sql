@@ -395,6 +395,9 @@ GO
 -- Caso de error (duracion negativa)
 -- EXEC sp_InsertarPelicula @ID_Clasificaciones = 1, @ID_Genero = 1, @Titulo = 'Prueba', @Sinopsis = 'Prueba de sinopsis', @Duracion = -120;
 -- GO
+-- Pruebas BD2-43 (Henry) sp_InsertarPelicula
+-- Verificación de la transacción
+-- SELECT * FROM PELICULAS WHERE id_clasificacion = 1 AND id_genero = 1 AND titulo = 'Prueba';
 
 -- Pruebas BD2-41 (Marcelo) sp_CrearFuncion
 -- Caso exitoso
@@ -427,16 +430,26 @@ GO
 -- Caso de error (butaca ya ocupada en misma función)
 -- EXEC sp_CrearReservaConDetalle @id_usuario = 3, @id_funcion = 5, @id_butaca = 6
 -- GO
+-- Pruebas BD2-43 (Henry) sp_CrearReservaConDetalle
+-- Verificación de la transacción
+-- SELECT * FROM RESERVAS WHERE id_usuario = 3 AND id_funcion = 5;
+-- SELECT * FROM DETALLES_RESERVAS;
 
 -- Pruebas BD2-41 (Marcelo) sp_RegistrarPago
 -- Caso exitoso
 -- EXEC sp_RegistrarPago @id_reserva = 3, @id_metodo_pago = 1, @total_pagado = 2800.00;
 -- GO
--- Caso de error (reserva cancelada o ya pagada)
+-- Caso de error (reserva ya pagada)
 -- EXEC sp_RegistrarPago @id_reserva = 4, @id_metodo_pago = 1, @total_pagado = 2800.00;
 -- GO
 -- SELECT * from PAGOS where id_reserva = 3;
 -- GO
+-- Pruebas BD2-43 (Henry) sp_RegistrarPago
+-- Caso de error (reserva cancelada)
+-- EXEC sp_RegistrarPago @id_reserva = 5, @id_metodo_pago = 4, @total_pagado = 3500.00;
+-- Verificación de la transacción
+-- SELECT * FROM RESERVAS WHERE id_reserva = 5;
+-- SELECT * FROM PAGOS WHERE id_reserva = 5;
 
 -- Pruebas BD2-41 (Marcelo) sp_CancelarReserva
 -- Caso exitoso
